@@ -2,7 +2,7 @@ auterion-api-version: 2
 auterion-app-base: v2
 
 app-name: dronetag-agent
-app-version: 0.2.0
+app-version: 0.3.0
 app-author: com.starcopter
 target-platform:
   - skynode
@@ -11,8 +11,22 @@ services:
   log-mavlink: 
     build: services/mavlink
 
+  dronetag: 
+    build: services/dronetag
+
+    http:
+      /:
+        proxy:
+          port: 8000
+        function: 
+          type: ui
+          label: Dronetag Agent
+
 compose-override:
   services:
     log-mavlink:
+      volumes:
+        - /etc/hostname:/etc/skynode:ro
+    dronetag:
       volumes:
         - /etc/hostname:/etc/skynode:ro
