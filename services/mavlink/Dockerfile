@@ -1,13 +1,9 @@
-FROM auterion/app-base:v2
+FROM python:3.12-alpine
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-    apt-get install -qq -y --no-install-recommends \
-    netcat-openbsd \
-    && rm -rf /var/lib/apt/lists/* && apt-get clean
+RUN pip install libmav
 
-# COPY APP
 WORKDIR /app
-COPY log.sh /app/log.sh
+COPY log_mavlink.py log_mavlink.py
+COPY mavlink mavlink
 
-ENTRYPOINT [ "/app/log.sh" ]
+CMD python3 log_mavlink.py
