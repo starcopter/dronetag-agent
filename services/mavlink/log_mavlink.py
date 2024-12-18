@@ -1,6 +1,7 @@
 import asyncio
 import gzip
 import json
+import logging
 import socket
 import time
 from datetime import datetime, timezone
@@ -14,6 +15,8 @@ try:
     skynode = Path("/etc/skynode").read_text().strip()
 except FileNotFoundError:
     skynode = None
+
+logger = logging.getLogger(__name__)
 
 
 def message_to_json(msg: libmav.Message) -> str:
@@ -51,7 +54,7 @@ async def main():
     else:
         logfile = Path(f"mavlink-{socket.gethostname()}.{now_str}.jsonl.gz")
 
-    print(logfile)
+    logger.info("Logging to %s", logfile)
 
     message_set = libmav.MessageSet("mavlink/common.xml")
 
@@ -71,20 +74,25 @@ async def main():
         conn_phy = libmav.Serial("/dev/ttyUSB0", 115200, False)
 
     conn = AsyncLibmavConnection(conn_phy, message_set, heartbeat=heartbeat)
-    conn.start()
+    runner = asyncio.create_task(conn.run())
 
     try:
+        logger.debug("opening %s", logfile)
         with gzip.open(logfile, "wb") as f:
             async for msg in conn:
+                logger.debug(f"{msg.header.system_id}.{msg.header.component_id} {msg.name}")
                 f.write(message_to_json(msg).encode() + b"\n")
-    except KeyboardInterrupt:
-        pass
     except Exception as e:
-        print(e)
+        logger.exception("main() received an exception: %s", e, exc_info=True)
         pass
-
-    conn.stop()
+    finally:
+        logger.debug("%s closed", logfile)
+        runner.cancel()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    logging.basicConfig(level=logging.INFO)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass

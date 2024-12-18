@@ -1,8 +1,10 @@
 import asyncio
-import queue
-import threading
+import functools
+import logging
 
 import libmav
+
+logger = logging.getLogger(__name__)
 
 
 class AsyncLibmavConnection:
@@ -24,23 +26,9 @@ class AsyncLibmavConnection:
         else:
             self._runtime = libmav.NetworkRuntime(identifier, message_set, phy)
 
-        self._loop = asyncio.get_event_loop()
-        self._worker: asyncio.Future | None = None
-
-        self._shutdown_request = threading.Event()
-        self._running = asyncio.Event()
-        self._tx_queue: queue.Queue[libmav.Message] = queue.Queue()
+        self._loop = asyncio.get_running_loop()
+        self._tx_queue: asyncio.Queue[libmav.Message] = asyncio.Queue()
         self._rx_queue: asyncio.Queue[libmav.Message] = asyncio.Queue()
-
-    def start(self):
-        if self._worker is not None and not self._worker.done():
-            raise RuntimeError("Worker already running")
-        self._worker = self._loop.run_in_executor(None, self._worker_task)
-
-    def stop(self):
-        self._shutdown_request.set()
-        if self._worker:
-            self._worker.cancel()
 
     def __aiter__(self):
         return self
@@ -48,17 +36,22 @@ class AsyncLibmavConnection:
     async def __anext__(self):
         return await self._rx_queue.get()
 
-    def _worker_task(self):
-        conn = self._runtime.await_connection(5000)
+    async def run(self):
+        conn = await asyncio.to_thread(self._runtime.await_connection, 10000)
+        logger.info("libmav connected")
 
-        def _message_callback(msg: libmav.Message):
-            asyncio.run_coroutine_threadsafe(self._rx_queue.put(msg), self._loop)
+        callback = functools.partial(self._loop.call_soon_threadsafe, self._rx_queue.put_nowait)
+        conn.add_message_callback(callback)
 
-        conn.add_message_callback(_message_callback)
-
-        while not self._shutdown_request.is_set():
+        while True:
             try:
-                msg = self._tx_queue.get(0.1)
+                msg = await self._tx_queue.get()
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.exception("tx queue get failed: %s", e, exc_info=True)
+                continue
+            else:
                 conn.send(msg)
-            except queue.Empty:
-                pass
+
+        return
