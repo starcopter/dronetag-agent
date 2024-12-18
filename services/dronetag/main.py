@@ -1,13 +1,13 @@
-from collections.abc import AsyncIterable, Sequence
-from collections import defaultdict
-from contextlib import asynccontextmanager
-import os
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from fastapi import FastAPI, Request
-import libmav
 import asyncio
+import os
+from collections import defaultdict
+from collections.abc import AsyncIterable, Sequence
+from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
+import libmav
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -36,9 +36,7 @@ class MessageEntry(BaseModel):
     timestamp: datetime
 
     @classmethod
-    def from_mavlink_message(
-        cls, msg: libmav.Message, timestamp: datetime | None = None
-    ):
+    def from_mavlink_message(cls, msg: libmav.Message, timestamp: datetime | None = None):
         return cls(
             system_id=msg.header.system_id,
             component_id=msg.header.component_id,
@@ -120,9 +118,7 @@ def get_index(request: Request):
         "HIGHDRA Serial Number": os.environ.get("HIGHDRA_SERIAL_NUMBER"),
         "Skynode Serial Number": get_skynode_serial_number(),
     }
-    return templates.TemplateResponse(
-        request, "index.html", {"title": "Dronetag Agent", "metadata": params}
-    )
+    return templates.TemplateResponse(request, "index.html", {"title": "Dronetag Agent", "metadata": params})
 
 
 @app.get("/env")

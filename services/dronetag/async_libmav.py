@@ -1,8 +1,11 @@
 import asyncio
 import functools
 import logging
+from pathlib import Path
 
 import libmav
+
+DEFAULT_MESSAGE_SET_LOCATION = Path(__file__).parent / "mavlink/common.xml"
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +20,12 @@ class AsyncLibmavConnection:
         heartbeat: libmav.Message | None = None,
     ):
         if message_set is None:
-            message_set = libmav.MessageSet("mavlink/common.xml")
+            message_set = libmav.MessageSet(str(DEFAULT_MESSAGE_SET_LOCATION))
 
         self.message_set = message_set
         identifier = libmav.Identifier(system_id, component_id)
         if heartbeat is not None:
-            self._runtime = libmav.NetworkRuntime(
-                identifier, message_set, heartbeat, phy
-            )
+            self._runtime = libmav.NetworkRuntime(identifier, message_set, heartbeat, phy)
         else:
             self._runtime = libmav.NetworkRuntime(identifier, message_set, phy)
 
@@ -42,9 +43,7 @@ class AsyncLibmavConnection:
         conn = await asyncio.to_thread(self._runtime.await_connection, 10000)
         logger.info("libmav connected")
 
-        callback = functools.partial(
-            self._loop.call_soon_threadsafe, self._rx_queue.put_nowait
-        )
+        callback = functools.partial(self._loop.call_soon_threadsafe, self._rx_queue.put_nowait)
         conn.add_message_callback(callback)
 
         while True:
