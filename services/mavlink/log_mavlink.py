@@ -1,11 +1,14 @@
-import libmav
-from datetime import datetime, timezone
+import asyncio
+import gzip
 import json
-from pathlib import Path
-import time
 import socket
-from functools import partial
+import time
+from datetime import datetime, timezone
+from pathlib import Path
 
+import libmav
+
+from async_libmav import AsyncLibmavConnection
 
 try:
     skynode = Path("/etc/skynode").read_text().strip()
@@ -13,9 +16,9 @@ except FileNotFoundError:
     skynode = None
 
 
-def log_message(msg: libmav.Message, logfile: Path):
+def message_to_json(msg: libmav.Message) -> str:
     timestamp_us = time.time_ns() // 1000
-    message_dict = msg.to_dict()
+    message_dict = {k: v for k, v in msg.to_dict().items() if not k.startswith("_")}
     header_dict = {
         "magic": msg.header.magic,
         "length": msg.header.len,
@@ -25,6 +28,7 @@ def log_message(msg: libmav.Message, logfile: Path):
         "system_id": msg.header.system_id,
         "component_id": msg.header.component_id,
         "message_id": msg.header.message_id,
+        "dtype": msg.name,
     }
 
     json_str = json.dumps(
@@ -35,18 +39,17 @@ def log_message(msg: libmav.Message, logfile: Path):
         }
     )
 
-    with logfile.open("a") as f:
-        f.write(json_str + "\n")
+    return json_str
 
 
-def main():
+async def main():
     now = datetime.now(tz=timezone.utc)
     now_str = now.strftime("%Y-%m-%d.%H-%M-%S.%Z")
 
     if skynode:
-        logfile = Path("/data", f"mavlink-{skynode}.{now_str}.jsonl")
+        logfile = Path("/data", f"mavlink-{skynode}.{now_str}.jsonl.gz")
     else:
-        logfile = Path(f"mavlink-{socket.gethostname()}.{now_str}.jsonl")
+        logfile = Path(f"mavlink-{socket.gethostname()}.{now_str}.jsonl.gz")
 
     print(logfile)
 
@@ -62,32 +65,26 @@ def main():
         }
     )
 
-    system_id = 1
-    mavlink_identifier = libmav.Identifier(
-        system_id, message_set.enum("MAV_COMP_ID_USER1")
-    )
-
     if skynode:
         conn_phy = libmav.TCPClient("172.17.0.1", 5790)
     else:
         conn_phy = libmav.Serial("/dev/ttyUSB0", 115200, False)
 
-    conn_runtime = libmav.NetworkRuntime(
-        mavlink_identifier, message_set, heartbeat, conn_phy
-    )
+    conn = AsyncLibmavConnection(conn_phy, message_set, heartbeat=heartbeat)
+    conn.start()
 
-    conn = conn_runtime.await_connection(5000)
-    conn.add_message_callback(partial(log_message, logfile=logfile))
+    try:
+        with gzip.open(logfile, "wb") as f:
+            async for msg in conn:
+                f.write(message_to_json(msg).encode() + b"\n")
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        print(e)
+        pass
 
-    while True:
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            break
-        except Exception as e:
-            print(e)
-            break
+    conn.stop()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
