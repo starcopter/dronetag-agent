@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<div class="row">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">System ID</th>
+        <th scope="col">Component ID</th>
+        <th scope="col">Age</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in messages %}
+      <tr>
+        <td>{{ m.name }}</td>
+        <td>{{ m.system_id }}</td>
+        <td>{{ m.component_id }}</td>
+        <td>{{ m.age }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}
