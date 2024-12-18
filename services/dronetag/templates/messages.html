@@ -7,30 +7,7 @@
   <p>Rate of received MAVlink messages in the last 10 seconds.</p>
 </div>
 
-<div class="row">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">System ID</th>
-        <th scope="col">Component ID</th>
-        <th scope="col">Rate</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for m in messages %}
-      <tr>
-        <td class="fw-semibold">
-          <a href="https://mavlink.io/en/messages/common.html#{{ m.name }}" target="_blank">
-            {{ m.name }}
-          </a>
-        </td>
-        <td>{{ m.system_id }}</td>
-        <td>{{ m.component_id }}</td>
-        <td>{{ m.rate }} Hz</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="row" hx-get="{{ url_for('message_table') }}" hx-trigger="every 2s" >
+  {% include "blocks/message-table.html" %}
 </div>
 {% endblock content %}

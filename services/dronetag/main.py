@@ -71,7 +71,10 @@ def calculate_rates(messages: Sequence[MessageEntry]) -> list[MessageRate]:
         )
         for k, v in count.items()
     ]
-    return sorted(message_rates, key=lambda x: (-x.rate, x.system_id, x.component_id, x.message_id))
+    return sorted(
+        message_rates,
+        key=lambda x: (-x.rate, x.system_id, x.component_id, x.message_id),
+    )
 
 
 message_buffer_lock = asyncio.Lock()
@@ -127,12 +130,19 @@ def read_env():
     return dict(os.environ)
 
 
-@app.get("/messages", response_class=HTMLResponse)
-async def read_messages(request: Request):
+async def get_message_table_context() -> dict:
     async with message_buffer_lock:
         rates = calculate_rates(message_buffer)
-    return templates.TemplateResponse(
-        request,
-        "messages.html",
-        {"title": "Messages", "messages": rates},
-    )
+    return {"title": "Messages", "messages": rates}
+
+
+@app.get("/messages/table", name="message_table", response_class=HTMLResponse)
+async def get_message_table(request: Request):
+    context = await get_message_table_context()
+    return templates.TemplateResponse(request, "blocks/message-table.html", context)
+
+
+@app.get("/messages", response_class=HTMLResponse)
+async def read_messages(request: Request):
+    context = await get_message_table_context()
+    return templates.TemplateResponse(request, "messages.html", context)
