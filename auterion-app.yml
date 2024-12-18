@@ -9,7 +9,7 @@ target-platform:
 
 services:
   dronetag: 
-    build: services/dronetag
+    build: src
 
     http:
       /:
