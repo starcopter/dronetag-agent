@@ -99,7 +99,22 @@ class DronetagGateway:
                 case _:
                     continue
 
-            logger.debug(f"FW: {message.id:3d} {message.name}")
+            logger.debug(f"FMU: {message.id:5d} {message.name}")
+
+    async def process_dri_messages(self):
+        async for message in self.dri_conn:
+            if not (message.header.system_id == 2 and message.header.component_id == 236):
+                continue
+
+            logger.debug(f"DRI: {message.id:5d} {message.name}")
+
+            if message.name == "OPEN_DRONE_ID_ARM_STATUS":
+                await self.forward_message(message, self.fmu_conn)
+                if message["status"] == odid.ArmStatus.MAV_ODID_ARM_STATUS_GOOD_TO_ARM:
+                    logger.debug("ARM_STATUS: OK")
+                else:
+                    logger.warning(f"ARM_STATUS: {message['error']}")
+
 
     async def send_odid_basic_id(self):
         # TODO: use type from fmu_odid_basic_id, use actual serial number
@@ -162,6 +177,7 @@ class DronetagGateway:
             tg.create_task(self.dri_conn.run())
 
             tg.create_task(self.process_fmu_messages())
+            tg.create_task(self.process_dri_messages())
             tg.create_task(self.send_odid_messages())
 
 
