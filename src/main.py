@@ -14,6 +14,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 from async_libmav import AsyncLibmavConnection
+from gateway import DronetagGateway
 
 LAST_MESSAGES_MAX_AGE = timedelta(seconds=10)
 
@@ -102,8 +103,12 @@ async def lifespan(app: FastAPI):
     runner = asyncio.create_task(conn.run())
     other_task = asyncio.create_task(handle_mavlink_messages(conn))
 
+    gateway = DronetagGateway(ip)
+    gateway_task = asyncio.create_task(gateway.run())
+
     yield
 
+    gateway_task.cancel()
     other_task.cancel()
     runner.cancel()
 

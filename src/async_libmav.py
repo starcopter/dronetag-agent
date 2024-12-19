@@ -39,6 +39,9 @@ class AsyncLibmavConnection:
     async def __anext__(self):
         return await self._rx_queue.get()
 
+    async def send(self, message: libmav.Message):
+        await self._tx_queue.put(message)
+
     async def run(self):
         conn = await asyncio.to_thread(self._runtime.await_connection, 10000)
         logger.info("libmav connected")
