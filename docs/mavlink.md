@@ -150,3 +150,10 @@ The successful landing at 19:08:32 cleared the emergency status flag, and the co
 [COM_POSCTL_NAVL]: https://docs.px4.io/v1.14/en/advanced_config/parameter_reference.html#COM_POSCTL_NAVL
 [px4-flight-mode-land]: https://docs.px4.io/v1.14/en/flight_modes_mc/land.html
 [grafana-mavlink-loss-of-gnss]: https://grafana.starcopter.de/d/ae9v33evpjjswa/mavlink-snippets?orgId=1&from=1736877960000&to=1736878140000&var-datasource=Mig5CVbnk&var-bucket=mavlink&var-logger=All&var-session=All&var-system_id=1&var-component_id=1
+
+In a flight mode _not_ requiring a valid position estimate (like Altitude mode), the GNSS loss failsafe action is not triggered.
+The trace displayed below ([dashboard][grafana-mavlink-complete-gnss-loss]) shows a deliberate GNSS loss: the copter was flying in Altitude mode, and even with a complete loss of the GNSS signal, the status remained **Airborne**.
+
+![Complete Loss of GNSS](mavlink-complete-gnss-loss.png)
+
+[grafana-mavlink-complete-gnss-loss]: https://grafana.starcopter.de/d/ae9v33evpjjswa/mavlink-snippets?orgId=1&from=1736936460000&to=1736936820000&var-datasource=Mig5CVbnk&var-bucket=mavlink&var-logger=All&var-session=All&var-system_id=1&var-component_id=1
