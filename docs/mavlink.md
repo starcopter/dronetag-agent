@@ -37,29 +37,29 @@ The Dronetag Agent (this application) acts as bridge, connecting MAVLink subnets
 
 ## Messages
 
-| Message | ID | PX4 | Dronetag Agent | DRI Module | Notes |
-| --- | --- | --- | --- | --- | --- |
-| **SYSTEM_TIME** | 2 | publish | forward | receive | |
-| **GPS_RAW_INT** | 24 | publish | forward | receive | |
-| **GLOBAL_POSITION_INT** | 33 | publish | forward | receive | |
-| **ALTITUDE** | 141 | publish | forward | receive | contains pressure altitude for ODID_LOCATION message, not sure if used |
-| **HOME_POSITION** | 242 | publish | receive | | contains information for ODID_SYSTEM message |
-| **ODID_BASIC_ID** | 12900 | publish | drop; publish | receive | PX4 sends this message, but it contains the wrong UAS ID. Dronetag Agent sends its own message with UAS ID from environment variable. |
-| **ODID_LOCATION** | 12901 | publish | forward | receive | does not need to be patched with emergency status 🎉 |
-| **ODID_SYSTEM** | 12902 | | publish | receive | filled with takeoff location from HOME_POSITION message |
-| **ODID_OPERATOR_ID** | 12903 | | publish | receive | operator ID from web app |
-| **ODID_ARM_STATUS** | 12904 | receive | forward | publish | |
+| Message                 | ID    | PX4     | Dronetag Agent | DRI Module | Notes                                                                                                                                 |
+| ----------------------- | ----- | ------- | -------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **SYSTEM_TIME**         | 2     | publish | forward        | receive    |                                                                                                                                       |
+| **GPS_RAW_INT**         | 24    | publish | forward        | receive    |                                                                                                                                       |
+| **GLOBAL_POSITION_INT** | 33    | publish | forward        | receive    |                                                                                                                                       |
+| **ALTITUDE**            | 141   | publish | forward        | receive    | contains pressure altitude for ODID_LOCATION message, not sure if used                                                                |
+| **HOME_POSITION**       | 242   | publish | receive        |            | contains information for ODID_SYSTEM message                                                                                          |
+| **ODID_BASIC_ID**       | 12900 | publish | drop; publish  | receive    | PX4 sends this message, but it contains the wrong UAS ID. Dronetag Agent sends its own message with UAS ID from environment variable. |
+| **ODID_LOCATION**       | 12901 | publish | forward        | receive    | does not need to be patched with emergency status 🎉                                                                                   |
+| **ODID_SYSTEM**         | 12902 |         | publish        | receive    | filled with takeoff location from HOME_POSITION message                                                                               |
+| **ODID_OPERATOR_ID**    | 12903 |         | publish        | receive    | operator ID from web app                                                                                                              |
+| **ODID_ARM_STATUS**     | 12904 | receive | forward        | publish    |                                                                                                                                       |
 
 ### Basic ID
 
 The Basic ID message includes the ID type, UA type, and the unique ID.
 This unique ID shall contain the manufacturer serial number of the UA.
 
-| Field | Type | (Sample) Value | Notes |
-| --- | --- | --- | --- |
-| ID Type | byte | 1 | enum: serial number |
-| UA Type | byte | 2 | enum: helicopter or multirotor |
-| UAS ID | byte[20] | 1715800000000 | serial number |
+| Field   | Type     | (Sample) Value | Notes                          |
+| ------- | -------- | -------------- | ------------------------------ |
+| ID Type | byte     | 1              | enum: serial number            |
+| UA Type | byte     | 2              | enum: helicopter or multirotor |
+| UAS ID  | byte[20] | 1715800000000  | serial number                  |
 
 ### Location
 
@@ -96,11 +96,11 @@ the `status` field in the **OPEN_DRONE_ID_LOCATION (12901)** message sent out by
 
 This was tested with a Highdra connected to a voltage controlled power supply. The copter was configured as follows:
 
-| Parameter | Value | Notes |
-| --- | --- | --- |
-| `BAT_LOW_THR` | 30 | Copter (and AMC) will warn at 30% |
-| `BAT_CRIT_THR` | 25 | Return to Launch if battery drops below 25% |
-| `BAT_EMERGEN_THR` | 10 | Land/Descend immediately if battery drops below 10% |
+| Parameter         | Value | Notes                                               |
+| ----------------- | ----- | --------------------------------------------------- |
+| `BAT_LOW_THR`     | 30    | Copter (and AMC) will warn at 30%                   |
+| `BAT_CRIT_THR`    | 25    | Return to Launch if battery drops below 25%         |
+| `BAT_EMERGEN_THR` | 10    | Land/Descend immediately if battery drops below 10% |
 
 A trace is available on the [Grafana dashboard][grafana-mavlink-low-battery], a screenshot is shown below.
 As long as the battery percentage is above 25%, the status field is still set to **Airborne**.
