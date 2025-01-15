@@ -63,8 +63,8 @@ class DronetagGateway:
         self.fmu_global_position_int: other.GlobalPositionInt | None = None
         self.fmu_altitude: other.Altitude | None = None
         self.fmu_home_position: other.HomePosition | None = None
-        self.fmu_odid_basic_id: odid.BasicID | None = None
         self.fmu_odid_location: odid.Location | None = None
+        self.dri_odid_arm_status: odid.ArmStatusMsg | None = None
 
     async def forward_message(self, message: libmav.Message, conn: AsyncLibmavConnection):
         new_message = self.message_set.create(message.name).set_from_dict(message.to_dict())
@@ -90,11 +90,8 @@ class DronetagGateway:
                     await self.forward_message(message, self.dri_conn)
                 case "HOME_POSITION":
                     self.fmu_home_position = other.HomePosition.from_mavlink(message)
-                case "OPEN_DRONE_ID_BASIC_ID":
-                    self.fmu_odid_basic_id = odid.BasicID.from_mavlink(message)
                 case "OPEN_DRONE_ID_LOCATION":
                     self.fmu_odid_location = odid.Location.from_mavlink(message)
-                    # TODO: update emergency status
                     await self.forward_message(message, self.dri_conn)
                 case _:
                     continue
@@ -110,19 +107,21 @@ class DronetagGateway:
 
             if message.name == "OPEN_DRONE_ID_ARM_STATUS":
                 await self.forward_message(message, self.fmu_conn)
-                if message["status"] == odid.ArmStatus.MAV_ODID_ARM_STATUS_GOOD_TO_ARM:
-                    logger.debug("ARM_STATUS: OK")
-                else:
-                    logger.warning(f"ARM_STATUS: {message['error']}")
-
+                arm_status = odid.ArmStatusMsg.from_mavlink(message)
+                if arm_status != self.dri_odid_arm_status:
+                    # only log if the status has changed
+                    self.dri_odid_arm_status = arm_status
+                    if arm_status.status == odid.ArmStatus.MAV_ODID_ARM_STATUS_GOOD_TO_ARM:
+                        logger.info("ARM_STATUS: OK")
+                    else:
+                        logger.warning(f"ARM_STATUS: {arm_status.error}")
 
     async def send_odid_basic_id(self):
-        # TODO: use type from fmu_odid_basic_id, use actual serial number
         message = self.message_set.create("OPEN_DRONE_ID_BASIC_ID").set_from_dict(
             {
                 "id_type": odid.IDType.MAV_ODID_ID_TYPE_SERIAL_NUMBER,
-                "ua_type": odid.UAType.MAV_ODID_UA_TYPE_KITE,
-                "uas_id": list("1715800000000".encode("ascii")),
+                "ua_type": odid.UAType.MAV_ODID_UA_TYPE_KITE,  # TODO: use actual type
+                "uas_id": list("1715800000000".encode("ascii")),  # TODO: use actual serial number
             }
         )
         await self.dri_conn.send(message)
