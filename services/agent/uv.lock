@@ -70,6 +70,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "libmav" },
+    { name = "python-multipart" },
 ]
 
 [package.dev-dependencies]
@@ -81,6 +82,7 @@ dev = [
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.6" },
     { name = "libmav", specifier = "==0.0.6" },
+    { name = "python-multipart", specifier = ">=0.0.19" },
 ]
 
 [package.metadata.requires-dev]

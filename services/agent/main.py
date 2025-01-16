@@ -5,9 +5,10 @@ from collections.abc import AsyncIterable, Sequence
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Annotated
 
 import libmav
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -15,18 +16,21 @@ from pydantic import BaseModel
 
 from async_libmav import AsyncLibmavConnection
 from gateway import DronetagGateway
+from oprn import OPRN
 
 LAST_MESSAGES_MAX_AGE = timedelta(seconds=10)
 
 templates = Jinja2Templates(directory="templates")
 static_files = StaticFiles(directory="static")
 
+MAVLINK_IP = os.environ.get("MAVLINK_IP")
+MAVLINK_PORT = int(os.environ.get("MAVLINK_PORT", 5790))
+HIGHDRA = os.environ.get("HIGHDRA_SERIAL_NUMBER", "1715800000000")
 
-def get_skynode_serial_number() -> str | None:
-    try:
-        return Path("/etc/skynode").read_text().strip().split("-")[-1]
-    except FileNotFoundError:
-        return None
+try:
+    SKYNODE = Path("/etc/skynode").read_text().strip().split("-")[-1]
+except FileNotFoundError:
+    SKYNODE = None
 
 
 class MessageEntry(BaseModel):
@@ -97,33 +101,39 @@ async def handle_mavlink_messages(message_iterator: AsyncIterable[libmav.Message
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ip = "172.17.0.1" if get_skynode_serial_number() else "10.41.0.1"
-    conn_phy = libmav.TCPClient(ip, 5790)
-    conn = AsyncLibmavConnection(conn_phy)
-    runner = asyncio.create_task(conn.run())
-    other_task = asyncio.create_task(handle_mavlink_messages(conn))
+    if MAVLINK_IP:
+        conn_phy = libmav.TCPClient(MAVLINK_IP, MAVLINK_PORT)
+        conn = AsyncLibmavConnection(conn_phy)
+        runner = asyncio.create_task(conn.run())
+        other_task = asyncio.create_task(handle_mavlink_messages(conn))
 
-    gateway = DronetagGateway(ip)
-    gateway_task = asyncio.create_task(gateway.run())
+        gateway = DronetagGateway(MAVLINK_IP, MAVLINK_PORT)
+        gateway_task = asyncio.create_task(gateway.run())
 
     yield
 
-    gateway_task.cancel()
-    other_task.cancel()
-    runner.cancel()
+    if MAVLINK_IP:
+        gateway_task.cancel()
+        other_task.cancel()
+        runner.cancel()
 
 
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", static_files, name="static")
 
+cached_oprn: OPRN | None = None
+
 
 @app.get("/", response_class=HTMLResponse)
 def get_index(request: Request):
     params = {
-        "HIGHDRA Serial Number": os.environ.get("HIGHDRA_SERIAL_NUMBER"),
-        "Skynode Serial Number": get_skynode_serial_number(),
+        "title": "Dronetag Agent",
+        "highdra_serial_number": HIGHDRA,
+        "skynode_serial_number": SKYNODE,
     }
-    return templates.TemplateResponse(request, "index.html", {"title": "Dronetag Agent", "metadata": params})
+    if cached_oprn:
+        params["oprn"] = cached_oprn.public_part
+    return templates.TemplateResponse(request, "index.html", params)
 
 
 @app.get("/env")
@@ -147,3 +157,22 @@ async def get_message_table(request: Request):
 async def read_messages(request: Request):
     context = await get_message_table_context()
     return templates.TemplateResponse(request, "messages.html", context)
+
+
+@app.post("/oprn")
+async def post_oprn(request: Request, oprn: Annotated[str, Form()]):
+    global cached_oprn
+    try:
+        cached_oprn = OPRN(oprn)
+    except ValueError as e:
+        return templates.TemplateResponse(request, "blocks/oprn-form.html", {"oprn": oprn, "oprn_error": str(e)})
+    return templates.TemplateResponse(
+        request, "blocks/oprn-form.html", {"oprn": cached_oprn.public_part if cached_oprn else None}
+    )
+
+
+@app.delete("/oprn")
+async def delete_oprn(request: Request):
+    global cached_oprn
+    cached_oprn = None
+    return templates.TemplateResponse(request, "blocks/oprn-form.html")

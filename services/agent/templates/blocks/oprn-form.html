@@ -1,0 +1,25 @@
+<!-- OPRN Form -->
+{% set oprn_valid = oprn and not oprn_error %}
+<form class="form-inline" novalidate autocomplete="off" {% if oprn_valid %}hx-delete="{{ url_for('delete_oprn') }}"
+  {% else %}hx-post="{{ url_for('post_oprn') }}" {% endif %}>
+
+  <div class="row justify-content-center my-4">
+    <div class="col-5">
+      <label for="oprn-input" class="form-label">Operator Registration Number</label>
+    </div>
+    <div class="col-5">
+      <input type="text" id="oprn-input" name="oprn" placeholder="e.g. FIN87astrdge12k8-xyz" required
+        {% if oprn %}value="{{ oprn }}" {% endif %} {% if oprn_valid %}readonly disabled{% endif %}
+        {% if oprn_error %}class="form-control is-invalid" {% elif oprn_valid %}class="form-control is-valid"
+        {% else %}class="form-control" {% endif %} />
+      {% if oprn_error %}<div class="invalid-feedback">{{ oprn_error }}</div>{% endif %}
+    </div>
+    <div class="col-2">
+      {% if oprn_valid %}
+      <button type="submit" class="btn btn-danger">Reset</button>
+      {% else %}
+      <button type="submit" class="btn btn-primary">Upload</button>
+      {% endif %}
+    </div>
+  </div>
+</form>

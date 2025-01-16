@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ title }}</h1>
+<div class="row shadow-lg p-5">
+  <h1>{{ title }}</h1>
 
-{% for key, value in metadata.items() %}
-<div class="row mt-3">
-  <div class="col-6">{{ key }}</div>
-  <div class="col-6">{{ value }}</div>
-</div>
-{% endfor %}
-
-<div class="row mt-3">
-  <div class="col-6">
-      <label for="oprn" class="form-label">Operator Registration Number</label>
+  <div class="row mt-3">
+    <div class="col-5">HIGHDRA</div>
+    <div class="col-7" id="highdra-serial-number">{{ highdra_serial_number | default("Not set") }}</div>
   </div>
-  <div class="col-6">
-      <input type="text" id="oprn" class="form-control" placeholder="e.g. FIN87astrdge12k8-xyz" />
+  {% if skynode_serial_number %}
+  <div class="row mt-3">
+    <div class="col-5">Skynode</div>
+    <div class="col-7" id="skynode-serial-number">{{ skynode_serial_number }}</div>
+  </div>
+  {% endif %}
+
+  <div class="row mt-3">
+    {% include "blocks/oprn-form.html" %}
   </div>
 </div>
 {% endblock content %}
