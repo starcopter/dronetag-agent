@@ -8,8 +8,8 @@ target-platform:
   - skynode
 
 services:
-  dronetag: 
-    build: src
+  agent: 
+    build: services/agent
 
     http:
       /:
@@ -21,6 +21,6 @@ services:
 
 compose-override:
   services:
-    dronetag:
+    agent:
       volumes:
         - /etc/hostname:/etc/skynode:ro
