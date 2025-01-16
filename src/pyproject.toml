@@ -1,8 +1,11 @@
 [project]
-name = "dronetag"
-version = "0.1.0"
-description = "Add your description here"
+name = "dronetag-agent"
+version = "0.7.0-dev.1"
+description = "MAVLink relay to couple a Dronetag DRI module with Skynode."
 readme = "README.md"
+authors = [
+    { name = "Lasse Fröhner", email = "lasse@starcopter.com" }
+]
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.115.6",
