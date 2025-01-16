@@ -17,38 +17,48 @@ static_files = StaticFiles(directory="static")
 
 MAVLINK_IP = os.environ.get("MAVLINK_IP")
 MAVLINK_PORT = int(os.environ.get("MAVLINK_PORT", 5790))
-HIGHDRA = os.environ.get("HIGHDRA_SERIAL_NUMBER", "1715800000000")
+
+if _override := os.environ.get("UAS_ID_OVERRIDE"):
+    UAS_ID = _override
+else:
+    try:
+        UAS_ID = Path("/etc/vehicle_sn").read_text().strip()
+    except FileNotFoundError:
+        UAS_ID = None
 
 try:
     SKYNODE = Path("/etc/skynode").read_text().strip().split("-")[-1]
 except FileNotFoundError:
     SKYNODE = None
 
+gateway: DronetagGateway | None = None
+cached_oprn: OPRN | None = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global gateway
     if MAVLINK_IP:
-        gateway = DronetagGateway(MAVLINK_IP, MAVLINK_PORT)
+        gateway = DronetagGateway(MAVLINK_IP, MAVLINK_PORT, uas_id=UAS_ID)
         gateway_task = asyncio.create_task(gateway.run())
 
     yield
 
     if MAVLINK_IP:
         gateway_task.cancel()
+        gateway = None
 
 
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", static_files, name="static")
-
-cached_oprn: OPRN | None = None
 
 
 @app.get("/", response_class=HTMLResponse)
 def get_index(request: Request):
     params = {
         "title": "Dronetag Agent",
-        "highdra_serial_number": HIGHDRA,
-        "skynode_serial_number": SKYNODE,
+        "uas_id": UAS_ID,
+        "skynode": SKYNODE,
     }
     if cached_oprn:
         params["oprn"] = cached_oprn.public_part
@@ -65,15 +75,25 @@ async def post_oprn(request: Request, oprn: Annotated[str, Form()]):
     global cached_oprn
     try:
         cached_oprn = OPRN(oprn)
+        if gateway:
+            gateway.oprn = cached_oprn
     except ValueError as e:
         return templates.TemplateResponse(request, "blocks/oprn-form.html", {"oprn": oprn, "oprn_error": str(e)})
-    return templates.TemplateResponse(
-        request, "blocks/oprn-form.html", {"oprn": cached_oprn.public_part if cached_oprn else None}
-    )
+    params = {}
+    if cached_oprn:
+        params["oprn"] = cached_oprn.public_part
+        params["oprn_success"] = "OPRN successfully uploaded."
+    return templates.TemplateResponse(request, "blocks/oprn-form.html", params)
 
 
 @app.delete("/oprn", response_class=HTMLResponse)
 async def delete_oprn(request: Request):
     global cached_oprn
     cached_oprn = None
-    return templates.TemplateResponse(request, "blocks/oprn-form.html")
+    if gateway:
+        gateway.oprn = None
+    return templates.TemplateResponse(
+        request,
+        "blocks/oprn-form.html",
+        {"message": "OPRN successfully reset. Restart the drone for the changes to take effect."},
+    )

@@ -2,7 +2,7 @@ auterion-api-version: 2
 auterion-app-base: v2
 
 app-name: dronetag-agent
-app-version: 0.7.0-dev.2  # auto-generated, do not edit
+app-version: 0.7.0  # auto-generated, do not edit
 app-author: com.starcopter
 target-platform:
   - skynode
@@ -24,3 +24,4 @@ compose-override:
     agent:
       volumes:
         - /etc/hostname:/etc/skynode:ro
+        - /persistent/suite/vehicle_sn:/etc/vehicle_sn:ro

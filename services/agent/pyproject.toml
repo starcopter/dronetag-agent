@@ -1,6 +1,6 @@
 [project]
 name = "dronetag-agent"
-version = "0.7.0-dev.2"
+version = "0.7.0"
 description = "MAVLink relay to couple a Dronetag DRI module with Skynode."
 readme = "README.md"
 authors = [

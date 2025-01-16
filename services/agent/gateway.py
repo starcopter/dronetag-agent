@@ -6,6 +6,7 @@ import libmav
 
 from async_libmav import AsyncLibmavConnection
 from mavlink_messages import odid, other
+from oprn import OPRN
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class DronetagGateway:
         fmu_component_id: int = 236,  # MAV_COMP_ID_ODID_TXRX_1
         dri_system_id: int = 2,
         dri_component_id: int = 1,  # MAV_COMP_ID_AUTOPILOT1
+        uas_id: str | None = None,
     ):
         self.message_set = libmav.MessageSet("mavlink/common.xml")
 
@@ -65,6 +67,9 @@ class DronetagGateway:
         self.fmu_home_position: other.HomePosition | None = None
         self.fmu_odid_location: odid.Location | None = None
         self.dri_odid_arm_status: odid.ArmStatusMsg | None = None
+
+        self.oprn: OPRN | None = None
+        self.uas_id: str | None = uas_id
 
     async def forward_message(self, message: libmav.Message, conn: AsyncLibmavConnection):
         new_message = self.message_set.create(message.name).set_from_dict(message.to_dict())
@@ -117,11 +122,14 @@ class DronetagGateway:
                         logger.warning(f"ARM_STATUS: {arm_status.error}")
 
     async def send_odid_basic_id(self):
+        if not self.uas_id:
+            return
+
         message = self.message_set.create("OPEN_DRONE_ID_BASIC_ID").set_from_dict(
             {
                 "id_type": odid.IDType.MAV_ODID_ID_TYPE_SERIAL_NUMBER,
                 "ua_type": odid.UAType.MAV_ODID_UA_TYPE_KITE,  # TODO: use actual type
-                "uas_id": list("1715800000000".encode("ascii")),  # TODO: use actual serial number
+                "uas_id": list(self.uas_id.encode("ascii")),
             }
         )
         await self.dri_conn.send(message)
@@ -154,10 +162,13 @@ class DronetagGateway:
         await self.dri_conn.send(message)
 
     async def send_odid_operator_id(self):
+        if not self.oprn:
+            return
+
         message = self.message_set.create("OPEN_DRONE_ID_OPERATOR_ID").set_from_dict(
             {
                 "operator_id_type": self.message_set.enum("MAV_ODID_OPERATOR_ID_TYPE_CAA"),
-                "operator_id": "FIN92hello3world",
+                "operator_id": self.oprn.public_part,
             }
         )
         await self.dri_conn.send(message)
