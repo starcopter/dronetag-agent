@@ -95,5 +95,5 @@ async def delete_oprn(request: Request):
     return templates.TemplateResponse(
         request,
         "blocks/oprn-form.html",
-        {"message": "OPRN successfully reset. Restart the drone for the changes to take effect."},
+        {"message": "OPRN successfully reset."},
     )

@@ -162,13 +162,10 @@ class DronetagGateway:
         await self.dri_conn.send(message)
 
     async def send_odid_operator_id(self):
-        if not self.oprn:
-            return
-
         message = self.message_set.create("OPEN_DRONE_ID_OPERATOR_ID").set_from_dict(
             {
                 "operator_id_type": self.message_set.enum("MAV_ODID_OPERATOR_ID_TYPE_CAA"),
-                "operator_id": self.oprn.public_part,
+                "operator_id": self.oprn.public_part if self.oprn else "",
             }
         )
         await self.dri_conn.send(message)
