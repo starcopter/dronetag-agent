@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row shadow-lg p-4">
+<div class="shadow-lg p-4">
   <h1>{{ title }}</h1>
 
   <div class="row mt-3">
-    <div class="col-5">UAS ID</div>
-    <div class="col-7">{{ uas_id | default("Not set") }}</div>
+    <div class="col-4 col-md-5">UAS ID</div>
+    <div class="col-8 col-md-7">{{ uas_id | default("Not set") }}</div>
   </div>
   {% if skynode %}
   <div class="row mt-3">
-    <div class="col-5">Skynode</div>
-    <div class="col-7">{{ skynode }}</div>
+    <div class="col-4 col-md-5">Skynode</div>
+    <div class="col-8 col-md-7">{{ skynode }}</div>
   </div>
   {% endif %}
 
