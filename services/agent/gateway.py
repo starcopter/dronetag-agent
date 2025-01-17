@@ -6,7 +6,7 @@ import libmav
 
 from async_libmav import AsyncLibmavConnection
 from mavlink_messages import odid, other
-from oprn import OPRN
+from settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -14,16 +14,8 @@ UNIX_TIMESTAMP_2019_01_01 = 1546300800
 
 
 class DronetagGateway:
-    def __init__(
-        self,
-        mavlink_endpoint_ip: str,
-        mavlink_endpoint_port: int = 5790,
-        fmu_system_id: int = 1,
-        fmu_component_id: int = 236,  # MAV_COMP_ID_ODID_TXRX_1
-        dri_system_id: int = 2,
-        dri_component_id: int = 1,  # MAV_COMP_ID_AUTOPILOT1
-        uas_id: str | None = None,
-    ):
+    def __init__(self, settings: Settings):
+        self.settings = settings
         self.message_set = libmav.MessageSet("mavlink/common.xml")
 
         fmu_heartbeat = self.message_set.create("HEARTBEAT").set_from_dict(
@@ -46,17 +38,17 @@ class DronetagGateway:
         )
 
         self.fmu_conn = AsyncLibmavConnection(
-            libmav.TCPClient(mavlink_endpoint_ip, mavlink_endpoint_port),
+            self.mavlink_tcp_client(),
             message_set=self.message_set,
-            system_id=fmu_system_id,
-            component_id=fmu_component_id,
+            system_id=self.settings.fmu_system_id,
+            component_id=self.settings.fmu_component_id,
             heartbeat=fmu_heartbeat,
         )
         self.dri_conn = AsyncLibmavConnection(
-            libmav.TCPClient(mavlink_endpoint_ip, mavlink_endpoint_port),
+            self.mavlink_tcp_client(),
             message_set=self.message_set,
-            system_id=dri_system_id,
-            component_id=dri_component_id,
+            system_id=self.settings.dri_system_id,
+            component_id=self.settings.dri_component_id,
             heartbeat=dri_heartbeat,
         )
 
@@ -68,8 +60,11 @@ class DronetagGateway:
         self.fmu_odid_location: odid.Location | None = None
         self.dri_odid_arm_status: odid.ArmStatusMsg | None = None
 
-        self.oprn: OPRN | None = None
-        self.uas_id: str | None = uas_id
+    def mavlink_tcp_client(self) -> libmav.TCPClient:
+        try:
+            return libmav.TCPClient(str(self.settings.mavlink_endpoint_ip), self.settings.mavlink_endpoint_port)
+        except RuntimeError as e:
+            raise ConnectionError(f"Failed to create TCP client: {e}") from e
 
     async def forward_message(self, message: libmav.Message, conn: AsyncLibmavConnection):
         new_message = self.message_set.create(message.name).set_from_dict(message.to_dict())
@@ -122,14 +117,14 @@ class DronetagGateway:
                         logger.warning(f"ARM_STATUS: {arm_status.error}")
 
     async def send_odid_basic_id(self):
-        if not self.uas_id:
-            return
+        uas_id = self.settings.uas_id or ""
+        id_type = odid.IDType.MAV_ODID_ID_TYPE_SERIAL_NUMBER if uas_id else odid.IDType.MAV_ODID_ID_TYPE_NONE
 
         message = self.message_set.create("OPEN_DRONE_ID_BASIC_ID").set_from_dict(
             {
-                "id_type": odid.IDType.MAV_ODID_ID_TYPE_SERIAL_NUMBER,
-                "ua_type": odid.UAType.MAV_ODID_UA_TYPE_KITE,  # TODO: use actual type
-                "uas_id": list(self.uas_id.encode("ascii")),
+                "id_type": id_type,
+                "ua_type": self.settings.uas_type,
+                "uas_id": list(uas_id.encode("ascii")),
             }
         )
         await self.dri_conn.send(message)
@@ -162,10 +157,12 @@ class DronetagGateway:
         await self.dri_conn.send(message)
 
     async def send_odid_operator_id(self):
+        oprn = self.settings.oprn
+
         message = self.message_set.create("OPEN_DRONE_ID_OPERATOR_ID").set_from_dict(
             {
                 "operator_id_type": self.message_set.enum("MAV_ODID_OPERATOR_ID_TYPE_CAA"),
-                "operator_id": self.oprn.public_part if self.oprn else "",
+                "operator_id": oprn.public_part if oprn else "",
             }
         )
         await self.dri_conn.send(message)
@@ -186,24 +183,3 @@ class DronetagGateway:
             tg.create_task(self.process_fmu_messages())
             tg.create_task(self.process_dri_messages())
             tg.create_task(self.send_odid_messages())
-
-
-async def main():
-    # ip = "172.17.0.1" if get_skynode_serial_number() else "10.41.0.1"
-    ip = "10.41.0.1"
-
-    gateway = DronetagGateway(ip, 5790)
-    await gateway.run()
-
-
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s.%(msecs)03d %(levelname)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        pass

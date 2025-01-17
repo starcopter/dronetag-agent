@@ -1,6 +1,6 @@
 [project]
 name = "dronetag-agent"
-version = "0.8.0"
+version = "0.9.0"
 description = "MAVLink relay to couple a Dronetag DRI module with Skynode."
 readme = "README.md"
 authors = [
@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.115.6",
     "libmav==0.0.6",
+    "pydantic-settings>=2.7.1",
     "python-multipart>=0.0.19",
 ]
 

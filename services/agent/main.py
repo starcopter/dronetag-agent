@@ -1,7 +1,6 @@
 import asyncio
-import os
 from contextlib import asynccontextmanager
-from pathlib import Path
+from logging import getLogger
 from typing import Annotated
 
 from fastapi import FastAPI, Form, Request
@@ -10,43 +9,32 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from gateway import DronetagGateway
-from oprn import OPRN
+from settings import Settings
+
+logger = getLogger("uvicorn.error")
 
 templates = Jinja2Templates(directory="templates")
 static_files = StaticFiles(directory="static")
 
-MAVLINK_IP = os.environ.get("MAVLINK_IP")
-MAVLINK_PORT = int(os.environ.get("MAVLINK_PORT", 5790))
-
-if _override := os.environ.get("UAS_ID_OVERRIDE"):
-    UAS_ID = _override
-else:
-    try:
-        UAS_ID = Path("/etc/vehicle_sn").read_text().strip()
-    except FileNotFoundError:
-        UAS_ID = None
-
-try:
-    SKYNODE = Path("/etc/skynode").read_text().strip().split("-")[-1]
-except FileNotFoundError:
-    SKYNODE = None
-
-gateway: DronetagGateway | None = None
-cached_oprn: OPRN | None = None
+app_settings = Settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global gateway
-    if MAVLINK_IP:
-        gateway = DronetagGateway(MAVLINK_IP, MAVLINK_PORT, uas_id=UAS_ID)
+    app_settings.save()
+
+    try:
+        gateway = DronetagGateway(app_settings)
+    except ConnectionError as e:
+        logger.error(f"Failed to start gateway: {e}")
+        gateway_task = None
+    else:
         gateway_task = asyncio.create_task(gateway.run())
 
     yield
 
-    if MAVLINK_IP:
+    if gateway_task:
         gateway_task.cancel()
-        gateway = None
 
 
 app = FastAPI(lifespan=lifespan)
@@ -57,43 +45,39 @@ app.mount("/static", static_files, name="static")
 def get_index(request: Request):
     params = {
         "title": "Dronetag Agent",
-        "uas_id": UAS_ID,
-        "skynode": SKYNODE,
+        "uas_id": app_settings.uas_id,
+        "skynode": app_settings.skynode_id,
     }
-    if cached_oprn:
-        params["oprn"] = cached_oprn.public_part
+    if app_settings.oprn:
+        params["oprn"] = app_settings.oprn.public_part
     return templates.TemplateResponse(request, "index.html", params)
 
 
-@app.get("/env")
-def read_env():
-    return dict(os.environ)
+@app.get("/settings", response_model=Settings)
+def read_settings():
+    return app_settings
 
 
 @app.post("/oprn", response_class=HTMLResponse)
 async def post_oprn(request: Request, oprn: Annotated[str, Form()]):
-    global cached_oprn
     try:
-        cached_oprn = OPRN(oprn)
-        if gateway:
-            gateway.oprn = cached_oprn
-    except ValueError as e:
-        return templates.TemplateResponse(request, "blocks/oprn-form.html", {"oprn": oprn, "oprn_error": str(e)})
+        app_settings.oprn = oprn
+        app_settings.save()
+    except ValueError:
+        return templates.TemplateResponse(
+            request,
+            "blocks/oprn-form.html",
+            {"oprn": oprn, "oprn_error": "This number is not valid."},
+        )
     params = {}
-    if cached_oprn:
-        params["oprn"] = cached_oprn.public_part
+    if app_settings.oprn:
+        params["oprn"] = app_settings.oprn.public_part
         params["oprn_success"] = "OPRN successfully uploaded."
     return templates.TemplateResponse(request, "blocks/oprn-form.html", params)
 
 
 @app.delete("/oprn", response_class=HTMLResponse)
 async def delete_oprn(request: Request):
-    global cached_oprn
-    cached_oprn = None
-    if gateway:
-        gateway.oprn = None
-    return templates.TemplateResponse(
-        request,
-        "blocks/oprn-form.html",
-        {"message": "OPRN successfully reset."},
-    )
+    app_settings.oprn = None
+    app_settings.save()
+    return templates.TemplateResponse(request, "blocks/oprn-form.html", {"message": "OPRN successfully reset."})

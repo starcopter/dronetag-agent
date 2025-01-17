@@ -25,7 +25,8 @@ WORKDIR /app
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
-ENV MAVLINK_IP="172.17.0.1" MAVLINK_PORT=5790
+ENV DRONETAG_AGENT_CONFIG_FILE="/data/config.json"
+ENV MAVLINK_ENDPOINT_IP="172.17.0.1" MAVLINK_ENDPOINT_PORT=5790
 
 # Launch FastAPI application
 CMD ["fastapi", "run", "main.py", "--root-path", "/apps/com.starcopter.dronetag-agent"]
