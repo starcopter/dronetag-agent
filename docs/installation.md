@@ -121,7 +121,7 @@ Once logged in, deactivate Auterion's own Remote ID agent to prevent it from int
 
 ```shell
 $ mountrw  # to mount the root filesystem in read-write mode
-$ systemctl disable remoteid --now
+$ systemctl disable remoteid-agent --now
 Removed /etc/systemd/system/multi-user.target.wants/remoteid-agent.service.
 $ mountro  # mount root filesystem in read-only mode
 ```
