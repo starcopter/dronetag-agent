@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Build and release application with GitHub Actions
+- Limit accepted ISO 3166-1 Alpha-3 country codes to EU member states (#2)
+- Build and release application with GitHub Actions (#1)
 
 ## [0.9.0] - 2024-03-19
 
