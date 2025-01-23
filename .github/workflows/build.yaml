@@ -1,0 +1,69 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        required: true
+        type: string
+    outputs:
+      full_name:
+        value: ${{ jobs.build.outputs.full_name }}
+        description: Application name and version. This is also used as the name of the artifact.
+      filename:
+        value: ${{ jobs.build.outputs.filename }}
+        description: Filename of the built application.
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+      - develop
+      - release/*
+
+jobs:
+  build:
+    runs-on: auterion-dev
+    outputs:
+      full_name: ${{ steps.app_info.outputs.full_name }}
+      filename: ${{ steps.app_info.outputs.filename }}
+
+    steps:
+      - name: Checkout last PR commit
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout last tag
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
+
+      - name: Checkout branch
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+
+      - name: Parse app name and version
+        id: app_info
+        run: |
+          name=$(yq -r '"\(.["app-author"]).\(.["app-name"])"' auterion-app.y*ml)
+          version=$(yq -r '"\(.["app-version"])"' auterion-app.y*ml)
+          echo "full_name=${name}-${version}" >> $GITHUB_OUTPUT
+          echo "filename=${name}-${version}.auterionos" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+
+      - name: Build application
+        run: auterion-cli app build
+
+      - name: Verify build output exists
+        run: test -f "build/${{ steps.app_info.outputs.filename }}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.app_info.outputs.full_name }}
+          path: |
+            auterion-app.y*ml
+            build/${{ steps.app_info.outputs.filename }}

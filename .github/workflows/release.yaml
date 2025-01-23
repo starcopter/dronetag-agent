@@ -4,12 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "The version you want to release [v##.##.##]"
+        description: "The version you want to release"
         required: true
 
 jobs:
   prepare-release:
     runs-on: ubuntu-24.04
+    outputs:
+      tag: v${{ steps.semver.outputs.version }}
+      release-notes: ${{ steps.changelog.outputs.release-notes }}
+      prerelease: ${{ steps.semver.outputs.prerelease }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -17,27 +21,20 @@ jobs:
           fetch-depth: 0 # Fetch history for all branches and tags
 
       - name: Validate version input
-        id: validate-input
-        run: |
-          # Check if input version is in correct format
-          if [[ ! ${{ inputs.version }} =~ v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Invalid input version: wrong format!"
-            exit 1
-          fi
-          # Check if input version already exists as git tag
-          if [[ ! -z $(git tag | grep ${{ inputs.version }}) ]]; then
-            echo "::error::Invalid input version: already exists!"
-            exit 1
-          fi
+        id: semver
+        uses: matt-usurp/validate-semver@v2
+        with:
+          version: ${{ inputs.version }}
 
       - name: Update Changelog
+        id: changelog
         uses: thomaseizinger/keep-a-changelog-new-release@3.1.0
         with:
-          tag: ${{ inputs.version }}
+          tag: v${{ steps.semver.outputs.version }}
 
       - name: Update version in auterion-app.yml
         run: |
-          sed -i "s/^app-version:.*/app-version: ${inputs.version#v}/" auterion-app.yml
+          sed -i "s/^app-version:.*/app-version: ${{ steps.semver.outputs.version }}/" auterion-app.yml
 
       # In order to make a commit, we need to initialize a user.
       - name: Create Robot user
@@ -47,8 +44,54 @@ jobs:
 
       - name: Commit Changelog, create tag and push
         run: |
-          git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md for Release ${{ inputs.version }}"
-          git tag ${{ inputs.version }}
+          git add CHANGELOG.md auterion-app.yml
+          git commit -m "Update CHANGELOG.md for release v${{ steps.semver.outputs.version }}"
+          git tag v${{ steps.semver.outputs.version }}
           git push
-          git push origin ${{ inputs.version }}
+          git push origin v${{ steps.semver.outputs.version }}
+
+  build:
+    needs: prepare-release
+    uses: ./.github/workflows/build.yaml
+    with:
+      checkout_ref: ${{ needs.prepare-release.outputs.tag }}
+
+  publish:
+    needs: [build, prepare-release]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.full_name }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/${{ needs.build.outputs.filename }}
+          tag_name: ${{ needs.prepare-release.outputs.tag }}
+          body: ${{ needs.prepare-release.outputs.release-notes }}
+          prerelease: ${{ needs.prepare-release.outputs.prerelease != '' }}
+
+  cleanup-on-failure:
+    # Only run cleanup if either build or publish fail.
+    needs: [prepare-release, build, publish]
+    if: ${{ always() && (contains(needs.build.result, 'failure') || contains(needs.publish.result, 'failure')) }}
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.tag }}
+          # Fetch two commits, so you can hard reset below
+          fetch-depth: 2
+
+      - name: Cleanup tag and Changelog
+        run: |
+          git config user.name "github-bot :robot:"
+          git config user.email noreply@github.com
+          git reset --hard HEAD~1
+          git push --force origin HEAD:${{ github.ref }}
+          git tag -d ${{ needs.prepare-release.outputs.tag }}
+          git push --delete origin ${{ needs.prepare-release.outputs.tag }}
