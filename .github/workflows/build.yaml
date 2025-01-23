@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        required: true
+        type: string
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push: # all branches
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: auterion-dev
+
+    steps:
+      - name: Checkout last PR commit
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout last tag
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
+
+      - name: Checkout branch
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+
+      - name: Parse app name and version
+        id: app_info
+        run: |
+          yq -r '"name=\(.["app-author"]).\(.["app-name"])"' auterion-app.y*ml >> $GITHUB_OUTPUT
+          yq -r '"version=\(.["app-version"])"' auterion-app.y*ml >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+
+      - name: Build application
+        run: auterion-cli app build
+
+      - name: Verify build result
+        run: |
+          test -f "build/${{ steps.app_info.outputs.name }}-${{ steps.app_info.outputs.version }}.auterionos"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.app_info.outputs.name }}-${{ steps.app_info.outputs.version }}
+          path: |
+            auterion-app.y*ml
+            build/${{ steps.app_info.outputs.name }}-${{ steps.app_info.outputs.version }}.auterionos
