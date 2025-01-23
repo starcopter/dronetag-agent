@@ -8,7 +8,14 @@ from pydantic_core import CoreSchema
 from luhn import validate_string
 
 COUNTRY_CODES_FILE = Path(__file__).parent / "iso3166-1.txt"
-COUNTRY_CODES = {k: v for k, v in (line.split(maxsplit=1) for line in COUNTRY_CODES_FILE.read_text().splitlines())}
+COUNTRY_CODES = {
+    k: v
+    for k, v in (
+        line.split(maxsplit=1)
+        for line in COUNTRY_CODES_FILE.read_text().splitlines()
+        if line and not line.strip().startswith("#")
+    )
+}
 
 
 class OPRN:
@@ -79,3 +86,10 @@ if __name__ == "__main__":
     print(OPRN("FIN92hello1world-909"))
     print(OPRN("FIN87ASTRDGE12K8-XYZ"))
     print(OPRN("fin87astrdge12k8-xyz"))
+
+    try:
+        print(OPRN("PAK87astrdge12k8-xyz"))
+    except ValueError:
+        pass
+    else:
+        raise Exception("Expected ValueError")
