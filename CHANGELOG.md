@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2025-01-23
+
 ### Added
 
 - Limit accepted ISO 3166-1 Alpha-3 country codes to EU member states (#2)
@@ -26,5 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configuration management via web interface
 - Documentation for installation and usage
 
-[unreleased]: https://github.com/starcopter/dronetag-agent/compare/v0.9.0...HEAD
+[unreleased]: https://github.com/starcopter/dronetag-agent/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/starcopter/dronetag-agent/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/starcopter/dronetag-agent/compare/616ebe24fbfd3e404e157928bfe7af73369001e3...v0.9.0
