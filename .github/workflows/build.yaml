@@ -6,14 +6,27 @@ on:
       checkout_ref:
         required: true
         type: string
+    outputs:
+      full_name:
+        value: ${{ jobs.build.outputs.full_name }}
+        description: Application name and version. This is also used as the name of the artifact.
+      filename:
+        value: ${{ jobs.build.outputs.filename }}
+        description: Filename of the built application.
   pull_request:
     types: [opened, reopened, synchronize]
-  push: # all branches
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+      - release/*
 
 jobs:
   build:
     runs-on: auterion-dev
+    outputs:
+      full_name: ${{ steps.app_info.outputs.full_name }}
+      filename: ${{ steps.app_info.outputs.filename }}
 
     steps:
       - name: Checkout last PR commit
@@ -35,21 +48,22 @@ jobs:
       - name: Parse app name and version
         id: app_info
         run: |
-          yq -r '"name=\(.["app-author"]).\(.["app-name"])"' auterion-app.y*ml >> $GITHUB_OUTPUT
-          yq -r '"version=\(.["app-version"])"' auterion-app.y*ml >> $GITHUB_OUTPUT
+          name=$(yq -r '"\(.["app-author"]).\(.["app-name"])"' auterion-app.y*ml)
+          version=$(yq -r '"\(.["app-version"])"' auterion-app.y*ml)
+          echo "full_name=${name}-${version}" >> $GITHUB_OUTPUT
+          echo "filename=${name}-${version}.auterionos" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
 
       - name: Build application
         run: auterion-cli app build
 
-      - name: Verify build result
-        run: |
-          test -f "build/${{ steps.app_info.outputs.name }}-${{ steps.app_info.outputs.version }}.auterionos"
+      - name: Verify build output exists
+        run: test -f "build/${{ steps.app_info.outputs.filename }}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.app_info.outputs.name }}-${{ steps.app_info.outputs.version }}
+          name: ${{ steps.app_info.outputs.full_name }}
           path: |
             auterion-app.y*ml
-            build/${{ steps.app_info.outputs.name }}-${{ steps.app_info.outputs.version }}.auterionos
+            build/${{ steps.app_info.outputs.filename }}
