@@ -64,15 +64,10 @@ async def post_oprn(request: Request, oprn: Annotated[str, Form()]):
         app_settings.oprn = oprn
         app_settings.save()
     except ValueError:
-        return templates.TemplateResponse(
-            request,
-            "blocks/oprn-form.html",
-            {"oprn": oprn, "oprn_error": "This number is not valid."},
-        )
-    params = {}
-    if app_settings.oprn:
-        params["oprn"] = app_settings.oprn.public_part
-        params["oprn_success"] = "OPRN successfully uploaded."
+        params = {"oprn": oprn, "oprn_error": "This number is not valid."}
+        # We cannot return a 422 status code here, because HTMX (or Bootstrap) will reject it.
+    else:
+        params = {"oprn": app_settings.oprn.public_part, "oprn_success": "OPRN successfully uploaded."}
     return templates.TemplateResponse(request, "blocks/oprn-form.html", params)
 
 
