@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- HTML templates are now rendered with Jinja2 Fragments (#3)
+
 ## [0.10.1] - 2025-01-24
 
 ### Removed
