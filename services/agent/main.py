@@ -6,14 +6,14 @@ from typing import Annotated
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from jinja2_fragments.fastapi import Jinja2Blocks
 
 from gateway import DronetagGateway
 from settings import Settings
 
 logger = getLogger("uvicorn.error")
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Blocks(directory="templates")
 static_files = StaticFiles(directory="static")
 
 app_settings = Settings()
@@ -43,14 +43,16 @@ app.mount("/static", static_files, name="static")
 
 @app.get("/", response_class=HTMLResponse)
 def get_index(request: Request):
-    params = {
+    context = {
+        "request": request,
         "title": "Dronetag Agent",
         "uas_id": app_settings.uas_id,
         "skynode": app_settings.skynode_id,
     }
     if app_settings.oprn:
-        params["oprn"] = app_settings.oprn.public_part
-    return templates.TemplateResponse(request, "index.html", params)
+        context["oprn"] = app_settings.oprn.public_part
+    # TODO(sponsfreixes/jinja2-fragments#39): refactor context
+    return templates.TemplateResponse("index.html", context)
 
 
 @app.get("/settings", response_model=Settings)
@@ -60,19 +62,23 @@ def read_settings():
 
 @app.post("/oprn", response_class=HTMLResponse)
 async def post_oprn(request: Request, oprn: Annotated[str, Form()]):
+    context = {"request": request}
     try:
         app_settings.oprn = oprn
         app_settings.save()
     except ValueError:
-        params = {"oprn": oprn, "oprn_error": "This number is not valid."}
+        context |= {"oprn": oprn, "oprn_error": "This number is not valid."}
         # We cannot return a 422 status code here, because HTMX (or Bootstrap) will reject it.
     else:
-        params = {"oprn": app_settings.oprn.public_part, "oprn_success": "OPRN successfully uploaded."}
-    return templates.TemplateResponse(request, "blocks/oprn-form.html", params)
+        context |= {"oprn": app_settings.oprn.public_part, "oprn_success": "OPRN successfully uploaded."}
+    # TODO(sponsfreixes/jinja2-fragments#39): refactor context
+    return templates.TemplateResponse("index.html", context, block_name="oprn_form")
 
 
 @app.delete("/oprn", response_class=HTMLResponse)
 async def delete_oprn(request: Request):
     app_settings.oprn = None
     app_settings.save()
-    return templates.TemplateResponse(request, "blocks/oprn-form.html", {"message": "OPRN successfully reset."})
+    context = {"request": request, "message": "OPRN successfully reset."}
+    # TODO(sponsfreixes/jinja2-fragments#39): refactor context
+    return templates.TemplateResponse("index.html", context, block_name="oprn_form")
