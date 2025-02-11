@@ -1,0 +1,34 @@
+site_name: Dronetag Agent
+
+repo_url: https://github.com/starcopter/dronetag-agent
+repo_name: starcopter/dronetag-agent
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.tracking
+    - navigation.indexes
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Technical Documentation:
+      - tech-docs/index.md
+      - tech-docs/mavlink.md
+      - tech-docs/operator-registration-number.md
+  - Installation:
+      - setup/index.md
+      - setup/dri-module.md
+      - setup/skynode.md
+      - setup/dronetag-agent.md
+      - setup/drone-scanner.md
