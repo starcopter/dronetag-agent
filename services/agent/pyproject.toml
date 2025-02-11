@@ -8,6 +8,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.115.6",
+    "jinja2-fragments>=1.7.0",
     "libmav==0.0.6",
     "pydantic-settings>=2.7.1",
     "python-multipart>=0.0.19",
