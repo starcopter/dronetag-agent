@@ -1,6 +1,6 @@
 # DRI Module
 
-![Dronetag DRI Module](img/dronetag_dri_variants.png){ align=right width=250 }
+![Dronetag DRI Module](img/dronetag-dri.jpg){ align=right width=250 }
 
 This section will guide you through the process of preparing a [Dronetag DRI][dronetag-dri] module for use with the Dronetag Agent.
 

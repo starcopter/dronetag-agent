@@ -4,9 +4,12 @@ hide:
   - toc
 ---
 
-# Dronetag Agent
+# Dronetag Agent { style="display: none;" }
 
-![Dronetag Agent Web UI](dronetag-agent-web-ui.png)
+<figure markdown="span">
+  ![Dronetag Agent Web UI](img/dronetag-agent-web-ui.png)
+  <!-- <figcaption>Dronetag Agent Web UI</figcaption> -->
+</figure>
 
 The Dronetag Agent is an [Auterion App][auterion-app] enabling the use of a [Dronetag DRI][dronetag-dri] module
 on a [Skynode][skynode] platform.

@@ -16,6 +16,7 @@ theme:
 markdown_extensions:
   - admonition
   - attr_list
+  - md_in_html
   - pymdownx.superfences
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -24,6 +25,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - User Manual:
+      - manual/index.md
       - manual/drone-scanner.md
   - Technical Documentation:
       - tech-docs/index.md
@@ -34,4 +36,3 @@ nav:
       - setup/dri-module.md
       - setup/skynode.md
       - setup/dronetag-agent.md
-      - setup/drone-scanner.md
