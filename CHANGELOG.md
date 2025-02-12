@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added velocity threshold to ground course broadcast (#4)
+
 ### Changed
 
 - HTML templates are now rendered with Jinja2 Fragments (#3)

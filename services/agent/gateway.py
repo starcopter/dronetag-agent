@@ -92,7 +92,7 @@ class DronetagGateway:
                     self.fmu_home_position = other.HomePosition.from_mavlink(message)
                 case "OPEN_DRONE_ID_LOCATION":
                     self.fmu_odid_location = odid.Location.from_mavlink(message)
-                    await self.forward_message(message, self.dri_conn)
+                    await self.send_odid_location()
                 case _:
                     continue
 
@@ -165,6 +165,22 @@ class DronetagGateway:
                 "operator_id": oprn.public_part if oprn else "",
             }
         )
+        await self.dri_conn.send(message)
+
+    async def send_odid_location(self, location: odid.Location | None = None):
+        location = location or self.fmu_odid_location
+        if location is None:
+            return
+
+        location = location.model_copy()
+
+        # EN 4709-002:2023, 5.1 Data Directory, Track Direction:
+        # > If the aircraft is not moving horizontally, use the “Unknown” value.
+        # > Special values as invalid, no value, or unknown are coded with 361 deg.
+        if location.speed_horizontal < self.settings.odid_course_speed_threshold:
+            location.direction = 36100
+
+        message = self.message_set.create("OPEN_DRONE_ID_LOCATION").set_from_dict(location.to_dict())
         await self.dri_conn.send(message)
 
     async def send_odid_messages(self, period: float = 0.5):
