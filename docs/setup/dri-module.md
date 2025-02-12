@@ -8,7 +8,7 @@ This section will guide you through the process of preparing a [Dronetag DRI][dr
 
 ## Prerequisites
 
-Along with the DRI module to configure, you will need a way to power it.  
+Along with the DRI module to configure, you will need a way to power it.
 This can be:
 
 - a [HIGHDRA Motherboard][highdra-motherboard]

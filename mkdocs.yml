@@ -11,6 +11,7 @@ theme:
     - navigation.tabs
     - navigation.tracking
     - navigation.indexes
+    - navigation.footer
 
 markdown_extensions:
   - admonition
@@ -22,11 +23,13 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - User Manual:
+      - manual/drone-scanner.md
   - Technical Documentation:
       - tech-docs/index.md
       - tech-docs/mavlink.md
       - tech-docs/operator-registration-number.md
-  - Installation:
+  - System Setup:
       - setup/index.md
       - setup/dri-module.md
       - setup/skynode.md
