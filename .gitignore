@@ -4,3 +4,8 @@ build/
 
 # generated docs
 site/
+
+# npm artifacts
+node_modules/
+package-lock.json
+package.json
