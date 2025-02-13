@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     dri_system_id: int = 2
     dri_component_id: int = 1  # MAV_COMP_ID_AUTOPILOT1
 
+    course_speed_threshold_fraction: float = 0.5
+
     model_config = SettingsConfigDict(
         validate_assignment=True,
         secrets_dir="/etc",
