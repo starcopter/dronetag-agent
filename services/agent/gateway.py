@@ -178,14 +178,13 @@ class DronetagGateway:
         # > If the aircraft is not moving horizontally, use the “Unknown” value.
         # > Special values as invalid, no value, or unknown are coded with 361 deg.
         DIRECTION_UNKNOWN = 36100
-        SPEED_MAX = 25500
 
         accuracy = {
             odid.SpeedAccuracy.MAV_ODID_SPEED_ACC_10_METERS_PER_SECOND: 1000,
             odid.SpeedAccuracy.MAV_ODID_SPEED_ACC_3_METERS_PER_SECOND: 300,
             odid.SpeedAccuracy.MAV_ODID_SPEED_ACC_1_METERS_PER_SECOND: 100,
             odid.SpeedAccuracy.MAV_ODID_SPEED_ACC_0_3_METERS_PER_SECOND: 30,
-        }.get(location.speed_accuracy, SPEED_MAX)
+        }.get(location.speed_accuracy, 2000)
         threshold = accuracy * self.settings.course_speed_threshold_fraction
 
         if location.speed_horizontal < threshold:

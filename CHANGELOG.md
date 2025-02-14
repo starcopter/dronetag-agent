@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- In case of unknown speed accuracy, the track direction patch logic will assume 20 m/s uncertainty
+
 ### Fixed
 
 - Fixed OPRN input field to always smoothly connect with the button (#6)
