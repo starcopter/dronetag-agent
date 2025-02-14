@@ -26,6 +26,11 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 nav:
   - Home: index.md
@@ -34,7 +39,10 @@ nav:
       - manual/drone-scanner.md
   - Technical Documentation:
       - tech-docs/index.md
-      - tech-docs/en4709-002.md
+      - EN 4709-002:
+        - tech-docs/en4709-002/index.md
+        - tech-docs/en4709-002/04-general-design.md
+        - tech-docs/en4709-002/05-dri-function.md
       - Message Directory:
         - tech-docs/messages/index.md
         - tech-docs/messages/basic-id.md
