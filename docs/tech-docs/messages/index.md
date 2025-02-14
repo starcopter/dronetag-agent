@@ -26,3 +26,43 @@ The ASTM, EN 4709-002 and MAVLink messages are listed below.
 [ODID_SYSTEM]: https://mavlink.io/en/messages/common.html#OPEN_DRONE_ID_SYSTEM
 [ODID_OPERATOR_ID]: https://mavlink.io/en/messages/common.html#OPEN_DRONE_ID_OPERATOR_ID
 [ODID_ARM_STATUS]: https://mavlink.io/en/messages/common.html#OPEN_DRONE_ID_ARM_STATUS
+
+```mermaid
+sequenceDiagram
+    autonumber
+
+    actor Operator
+    participant px4 as PX4
+    participant agent as Dronetag Agent
+    participant dri as DRI Module
+
+    Operator ->>+ agent: Upload OPRN<br>via web interface
+    agent ->>- agent: save OPRN
+
+    px4 ->>+ agent: Location
+    alt moving
+        agent ->> dri: Location
+    else not moving
+        agent ->> dri: Location<br>with direction=361°
+    end
+    deactivate agent
+
+    px4 ->>+ agent: Home Position
+    agent ->>- agent: save home position
+
+    loop every 500 ms
+        activate agent
+        agent ->> dri: Basic ID
+        agent ->> dri: System
+        agent ->> dri: Operator ID
+        deactivate agent
+    end
+
+    dri ->>+ agent: ARM Status
+    agent ->> px4: ARM Status
+    px4 ->> Operator: ARM Status
+    opt changed
+        agent ->> agent: log changes
+    end
+    deactivate agent
+```

@@ -41,7 +41,9 @@ sequenceDiagram
 
     dri ->>+ agent: ARM Status
     agent ->> PX4: ARM Status
-    note over agent: log changes<br>in error state
+    opt changed
+        agent ->> agent: log changes
+    end
     deactivate agent
 ```
 

@@ -149,6 +149,10 @@ sequenceDiagram
     participant dri as DRI Module
 
     PX4 ->>+ agent: Location
-    note over agent: Patch direction<br>if not moving
-    agent ->>- dri: Location
+    alt moving
+        agent ->> dri: Location
+    else not moving
+        agent ->> dri: Location<br>with direction=361°
+    end
+    deactivate agent
 ```
