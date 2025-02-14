@@ -18,7 +18,11 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -31,6 +35,14 @@ nav:
   - Technical Documentation:
       - tech-docs/index.md
       - tech-docs/en4709-002.md
+      - Message Directory:
+        - tech-docs/messages/index.md
+        - tech-docs/messages/basic-id.md
+        - tech-docs/messages/location.md
+        - tech-docs/messages/self-id.md
+        - tech-docs/messages/system.md
+        - tech-docs/messages/operator-id.md
+        - tech-docs/messages/arm-status.md
       - tech-docs/mavlink.md
       - tech-docs/operator-registration-number.md
   - System Setup:
