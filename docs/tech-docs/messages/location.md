@@ -54,9 +54,7 @@ Possible values are:
 | 2     | Airborne   | Armed, possibly flying                           |
 | 3     | Emergency  | Emergency (C2 Link Loss, Low Battery, GNSS Loss) |
 
-!!! warning
-
-    Add link to emergency status description.
+Handling of the emergency status is described in detail on the [Operational Status](../operational-status/index.md) page.
 
 ### Direction (M)
 

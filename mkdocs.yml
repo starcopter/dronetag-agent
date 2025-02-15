@@ -52,7 +52,11 @@ nav:
           - tech-docs/messages/system.md
           - tech-docs/messages/operator-id.md
           - tech-docs/messages/arm-status.md
-      - tech-docs/mavlink.md
+      - Operational Status:
+          - tech-docs/operational-status/index.md
+          - tech-docs/operational-status/low-battery.md
+          - tech-docs/operational-status/c2-link-loss.md
+          - tech-docs/operational-status/gnss-loss.md
       - tech-docs/operator-registration-number.md
   - System Setup:
       - setup/index.md
