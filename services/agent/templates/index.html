@@ -26,7 +26,7 @@
           <label for="oprn-input" class="form-label">Operator Registration Number</label>
         </div>
         <div class="col-12 col-md-7">
-          <div class=" input-group has-validation">
+          <div class="input-group {% if oprn_error or oprn_success or message %}has-validation{% endif %}">
             <input type="text" id="oprn-input" name="oprn" placeholder="e.g. FIN87astrdge12k8-xyz" required
               {% if oprn %}value="{{ oprn }}" {% endif %} {% if oprn_valid %}readonly disabled{% endif %}
               {% if oprn_error %}class="form-control is-invalid" {% elif oprn_valid %}class="form-control is-valid"
