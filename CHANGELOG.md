@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add MkDocs documentation for the Dronetag Agent (#5)
+
 ### Changed
 
 - In case of unknown speed accuracy, the track direction patch logic will assume 20 m/s uncertainty

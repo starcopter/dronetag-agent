@@ -1,0 +1,65 @@
+site_name: Dronetag Agent
+
+repo_url: https://github.com/starcopter/dronetag-agent
+repo_name: starcopter/dronetag-agent
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.footer
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - User Manual:
+      - manual/index.md
+      - manual/drone-scanner.md
+  - Technical Documentation:
+      - tech-docs/index.md
+      - EN 4709-002:
+          - tech-docs/en4709-002/index.md
+          - tech-docs/en4709-002/04-general-design.md
+          - tech-docs/en4709-002/05-dri-function.md
+          - tech-docs/en4709-002/06-test-methods.md
+      - Message Directory:
+          - tech-docs/messages/index.md
+          - tech-docs/messages/basic-id.md
+          - tech-docs/messages/location.md
+          - tech-docs/messages/self-id.md
+          - tech-docs/messages/system.md
+          - tech-docs/messages/operator-id.md
+          - tech-docs/messages/arm-status.md
+      - Operational Status:
+          - tech-docs/operational-status/index.md
+          - tech-docs/operational-status/low-battery.md
+          - tech-docs/operational-status/c2-link-loss.md
+          - tech-docs/operational-status/gnss-loss.md
+      - tech-docs/operator-registration-number.md
+  - System Setup:
+      - setup/index.md
+      - setup/dri-module.md
+      - setup/skynode.md
+      - setup/dronetag-agent.md
