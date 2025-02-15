@@ -40,17 +40,17 @@ nav:
   - Technical Documentation:
       - tech-docs/index.md
       - EN 4709-002:
-        - tech-docs/en4709-002/index.md
-        - tech-docs/en4709-002/04-general-design.md
-        - tech-docs/en4709-002/05-dri-function.md
+          - tech-docs/en4709-002/index.md
+          - tech-docs/en4709-002/04-general-design.md
+          - tech-docs/en4709-002/05-dri-function.md
       - Message Directory:
-        - tech-docs/messages/index.md
-        - tech-docs/messages/basic-id.md
-        - tech-docs/messages/location.md
-        - tech-docs/messages/self-id.md
-        - tech-docs/messages/system.md
-        - tech-docs/messages/operator-id.md
-        - tech-docs/messages/arm-status.md
+          - tech-docs/messages/index.md
+          - tech-docs/messages/basic-id.md
+          - tech-docs/messages/location.md
+          - tech-docs/messages/self-id.md
+          - tech-docs/messages/system.md
+          - tech-docs/messages/operator-id.md
+          - tech-docs/messages/arm-status.md
       - tech-docs/mavlink.md
       - tech-docs/operator-registration-number.md
   - System Setup:

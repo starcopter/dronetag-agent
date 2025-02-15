@@ -10,7 +10,7 @@ The Operator ID message corresponds to the MAVLink [ODID_OPERATOR_ID] message.
 
     The operator ID message contains the operator ID (UAS operator registration number) information
     being released by the CAA; the relevant description is in the common Data Dictionary, and format
-    explained in 4.4 “Upload of UAS operator registration number”.
+    explained in 4.4 "Upload of UAS operator registration number".
 
 ## Fields
 

@@ -63,8 +63,8 @@ This unique ID shall contain the manufacturer serial number of the UA.
 
 ### Location
 
-The location/vector message is used to transmit the UA mandatory information such as “track
-direction”, “speed over ground”, “latitude”, “longitude”, “height”, and the “timestamp”.
+The location/vector message is used to transmit the UA mandatory information such as "track
+direction", "speed over ground", "latitude", "longitude", "height", and the "timestamp".
 
 ## Operational Status
 

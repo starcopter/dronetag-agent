@@ -21,7 +21,7 @@ The Basic ID message corresponds to the MAVLink [ODID_BASIC_ID] message.
        session ID scheme ID type. The first byte of the specific session ID shall be the specific session ID
        type (1-255) where 0 is reserved, 1-224 is the registered type, and 225-255 are available for
        private experimental use only. If using this method, the specific session ID sype shall be registered
-       through an external registration entity. Using the experimental range is not considered “compliant”
+       through an external registration entity. Using the experimental range is not considered "compliant"
        to this document but may be used for testing and experimentation.
    
     Two different Basic ID Messages shall be successively transmitted in case both CAA registration ID and

@@ -16,7 +16,7 @@ The System message corresponds to the MAVLink [ODID_SYSTEM] message.
     In case the GCS has a dynamic location source (e.g. GNSS), then the remote pilot location fields shall be
     the current location information of the GCS as acquired from the dynamic source.
 
-    In case the GCS is not receiving any dynamic location data, then the aircraft’s take-off location shall be
+    In case the GCS is not receiving any dynamic location data, then the aircraft's take-off location shall be
     assumed as the remote pilot location field. In this case, since this value generally does not vary as a UA
     location can vary, the minimum update frequency shall be the same as static messages.
 
