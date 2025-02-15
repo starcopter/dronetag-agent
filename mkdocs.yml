@@ -43,6 +43,7 @@ nav:
           - tech-docs/en4709-002/index.md
           - tech-docs/en4709-002/04-general-design.md
           - tech-docs/en4709-002/05-dri-function.md
+          - tech-docs/en4709-002/06-test-methods.md
       - Message Directory:
           - tech-docs/messages/index.md
           - tech-docs/messages/basic-id.md
