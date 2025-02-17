@@ -35,15 +35,6 @@ instance: FIN87astrdge12k8-xyz.
 
     No error message displayed; each valid UAS operator registration number is uploaded in the UA/addon.
 
-!!! question
-
-    What does _requiring to re-enter the full string_ mean? Where does this requirement come from?  
-    E-Mail sent to Carolina on 2025-02-15.
-
-!!! warning
-
-    Unclear, maybe we don't match the _re-enter_ requirement.
-
 ### 6.2.3 UAS DRI Data Field Transmission Testing Procedure
 
 This test shall be repeated (step 0 to step 4) for each supported transmission protocol, as
