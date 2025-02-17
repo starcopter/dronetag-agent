@@ -47,12 +47,12 @@ The MAVLink message thus includes more information (higher resolution) than the 
 Operational status of the UA.
 Possible values are:
 
-| Value | Meaning    | Impementation                                    |
-| ----- | ---------- | ------------------------------------------------ |
-| 0     | Undeclared | _not used by PX4_                                |
-| 1     | Grounded   | Normal operation on the ground                   |
-| 2     | Airborne   | Armed, possibly flying                           |
-| 3     | Emergency  | Emergency (C2 Link Loss, Low Battery, GNSS Loss) |
+| Value | Meaning    | Impementation                                              |
+| ----- | ---------- | ---------------------------------------------------------- |
+| 0     | Undeclared | _not used by PX4_                                          |
+| 1     | Grounded   | Normal operation on the ground, possibly armed, not flying |
+| 2     | Airborne   | Actually in flight, and thus definitely armed              |
+| 3     | Emergency  | Emergency (C2 Link Loss, Low Battery, GNSS Loss)           |
 
 Handling of the emergency status is described in detail on the [Operational Status](../operational-status/index.md) page.
 
