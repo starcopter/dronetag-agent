@@ -20,7 +20,7 @@ the drone will initiate a forced landing on the spot, and the operational status
 
 ## Test Setup
 
-This was tested with a HIGHDRA connected to a voltage controlled power supply, with no arms attached.
+This was tested on a HIGHDRA without arms, connected to a voltage controlled power supply.
 The copter was configured as follows:
 
 | Parameter         | Value | Notes                                               |
