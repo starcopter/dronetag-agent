@@ -1,6 +1,6 @@
 # Loss of GNSS :construction:
 
-!!! warning "Under construction"
+!!! warning "Under Construction"
 
     This page has not yet been updated. The information below is (likely) correct, but it needs to be re-structured and cleaned up.
 
