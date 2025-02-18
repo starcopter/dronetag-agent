@@ -123,9 +123,10 @@ time.
     Verify on the DRI receiver mobile device software, that the operational status of the UA changes to
     "Emergency" in each of the emergency scenarios as defined by the manufacturer.
 
-!!! warning "TODO"
+!!! note
 
-    Define and describe emergency scenarios.
+    Please take a look at the [Operational Status](../operational-status/index.md) page for more information
+    on emergency scenarios.
 
 ## 6.3 Update and Transmission Rates Test Procedure
 

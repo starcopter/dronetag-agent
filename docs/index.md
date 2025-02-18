@@ -18,8 +18,8 @@ on a [Skynode][skynode] platform.
 [dronetag-dri]: https://dronetag.com/products/dri/
 [skynode]: https://auterion.com/product/skynode-x/
 
-See the following pages for more information:
+The documentation is split into three parts:
 
-- [Installation](setup/index.md) for a step-by-step guide on how to install the Dronetag Agent on a Skynode.
-- [MAVLink](tech-docs/mavlink.md) for an overview of the MAVLink messages used by the Dronetag Agent and some notes on application architecture.
-- [Operator Registration Number](tech-docs/operator-registration-number.md) for some notes on the UAS Operator Registration Number (OPRN).
+- a [User Manual](manual/index.md) for operators and end-users (will be added to the Operating Manual as well)
+- a [Technical Documentation](tech-docs/index.md) for developers and third parties
+- a [Setup Guide](setup/index.md) containing instructions on how to setup, configure and install the DRI system on a HIGHDRA
