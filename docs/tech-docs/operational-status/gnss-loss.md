@@ -1,5 +1,9 @@
 # Loss of GNSS :construction:
 
+!!! warning "Under construction"
+
+    This page has not yet been updated. The information below is (likely) correct, but it needs to be re-structured and cleaned up.
+
 In case of GNSS deterioration (or even complete loss) in position control, PX4 will enter [Position Loss Failsafe][position-gps-loss-failsafe].
 The threshold for this is set by the parameter [`COM_POS_FS_EPH`][COM_POS_FS_EPH], which defaults to 5 meters. When this failsafe action
 is triggered, the copter will enter Altitude mode (with [`COM_POSCTL_NAVL`][COM_POSCTL_NAVL] set to 0) for the pilot to take over control.
