@@ -53,6 +53,12 @@ Polarity is like usual in the Pixhawk ecosystem:
 | 1   | VCC  |
 | 6   | GND  |
 
+### USB
+
+Arber has built a nifty adapter cable, which can be used to power the DRI module from a USB port:
+
+![USB-to-GH6 Adapter](img/usb-to-gh6.jpg)
+
 ## Dronetag Toolbox
 
 To configure the DRI module, you will need the Dronetag Toolbox app.  
