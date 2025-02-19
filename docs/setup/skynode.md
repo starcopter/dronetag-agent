@@ -14,7 +14,9 @@ Along with the Skynode you are configuring, you will need:
 Power the Skynode and connect it to the laptop.
 
 !!! note
-    The default WiFi network name is `Skynode-<serial-number>`, with the password `1234567890`.
+
+    The default WiFi network name is `skynode-<serial-number>` (AOS 3.5.13 and lower) or just `skynode` (AOS 3.7.9 and higher),
+    with the password `1234567890`.
 
 You should now be able to access the Skynode's web interface. The IP address depends on the connection method:
 
