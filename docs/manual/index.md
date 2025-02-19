@@ -16,11 +16,7 @@ which in turn depends on the remote controller being used.
 
 With the Herelink controller, the Dronetag Agent web UI is available at the following address:
 
-!!! question "Herelink Network"
-
-    IP Address missing.
-
-[http://192.168.x.y/apps/com.starcopter.dronetag-agent/](http://192.168.x.y/apps/com.starcopter.dronetag-agent/)
+[http://192.168.144.20/apps/com.starcopter.dronetag-agent/](http://192.168.144.20/apps/com.starcopter.dronetag-agent/)
 
 ### Skynode WiFi
 
