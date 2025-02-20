@@ -6,7 +6,7 @@ export async function onRequest(context) {
   const method = context.request.method;
   const url = new URL(context.request.url);
 
-  if (!email?.endsWith('@example.com')) {  // TODO: change to @starcopter.com
+  if (!email?.endsWith('@starcopter.com')) {
     if (url.pathname.startsWith('/setup/')) {
       return new Response(
         `Sorry, you don't have access to this page.\n${email}, ${city} (${country}): ${method} ${url.pathname}`,
