@@ -47,9 +47,16 @@ jobs:
         with:
           tag: v${{ steps.semver.outputs.version }}
 
-      - name: Commit Changelog, create tag and push
+      - name: Commit Changelog for Release
+        if: ${{ steps.semver.outputs.prerelease == '' }}
+        run: git add CHANGELOG.md
+
+      - name: Reset Changelog for Prerelease
+        if: ${{ steps.semver.outputs.prerelease != '' }}
+        run: git restore CHANGELOG.md
+
+      - name: Create tag and push
         run: |
-          git add CHANGELOG.md
           git commit -m "Prepare release v${{ steps.semver.outputs.version }}"
           git tag v${{ steps.semver.outputs.version }}
           git push
