@@ -2,10 +2,11 @@
 build-compose.yml
 build/
 
-# generated docs
+# MkDocs output
 site/
 
-# npm artifacts
+# wrangler artifacts
+.wrangler/
 node_modules/
 package-lock.json
 package.json

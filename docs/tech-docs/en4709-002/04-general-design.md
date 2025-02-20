@@ -34,12 +34,11 @@ The direct remote identification system shall reduce the ability of tampering wi
 !!! info
 
     In this sense, the _direct remote identification system_ is the DRI module, not the Dronetag Agent.
-    It is enclosed in the HIGHDRA and inaccessible to the user.
 
-!!! warning "TODO"
+!!! success
 
-    Check if the DRI module can be messed with via the Dronetag Toolbox or Dronetag app.
-    Maybe we need to assign the modules to the starcopter account? Can we lock or password-protect modules somehow?
+    As the DRI module is enclosed in the HIGHDRA, the user would need to physically disassemble the HIGHDRA to tamper with the DRI module.
+    The software (Dronetag Agent) is protected against tampering by a password.
 
 ### Specific security requirements
 
@@ -57,10 +56,6 @@ This memory is only accessible from _inside_ the mission computer, which require
 !!! success
 
     As the user does not have SSH access to the onboard system, the serial number can be considered secure.
-
-!!! warning "TODO"
-
-    Make sure to change the password from "auterion" to something else!
 
 #### Geolocation Information
 

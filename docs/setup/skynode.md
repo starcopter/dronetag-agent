@@ -33,7 +33,8 @@ Open Auterion Mission Control. When the Skynode is connected properly to your la
 Enter [Advanced Mode][amc-advanced-mode] and navigate to the **Advanced** --> **Parameters** tab.
 
 !!! note
-    If AMC is asking for a password to enter advanced mode, try `starcopter`.
+
+    If AMC is asking for a password to enter advanced mode, try `starcopter` or `mountain`.
 
 [amc-advanced-mode]: https://docs.auterion.com/hardware-integration/flight-controller-customization/amcs-advanced-mode#enable-advanced-mode-in-amc
 
@@ -58,7 +59,7 @@ Ensure the following parameters are configured correctly:
 With the Skynode still connected to your laptop, open a terminal window and SSH into the Skynode.
 As described [above](#preparation), the IP address depends on the connection method.
 
-If it has not been changed, the password will be `auterion`.
+The password should be either `auterion` (default), or `catfish silk latitude`.
 
 ```shell
 $ ssh root@10.41.0.1
@@ -93,6 +94,26 @@ It therefore has to be repeated after each software update!
 The [AuterionOS Documentation][auterion-os-docs] has more information on the subject.
 
 [auterion-os-docs]: https://docs.auterion.com/hardware-integration/auterionos-system-guide/filesystem-and-partitions#auterionos-partitions
+
+### Change Password
+
+If the password is still `auterion`, please change it, as that is [publicly documented][aos-password].
+
+!!! note
+
+    Use the password `catfish silk latitude` for now.
+    Yes, I know that's not very secure.
+
+```shell
+root@skynode-117339353:~# mountrw
+root@skynode-117339353:~# passwd
+New password:
+Retype new password:
+passwd: password updated successfully
+root@skynode-117339353:~# mountro
+```
+
+[aos-password]: https://docs.auterion.com/hardware-integration/auterionos-system-guide/filesystem-and-partitions#change-root-auterion-user-password
 
 ## Next Steps
 

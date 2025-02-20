@@ -1,4 +1,4 @@
-name: Build and Deploy Docs
+name: Docs
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          command: pages deploy
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: print deployment URLs

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - In case of unknown speed accuracy, the track direction patch logic will assume 20 m/s uncertainty
+- Setup docs are only available to people with an @starcopter.com email address (#10)
 
 ### Fixed
 
