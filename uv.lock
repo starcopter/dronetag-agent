@@ -104,7 +104,7 @@ wheels = [
 
 [[package]]
 name = "dronetag-app"
-version = "0.12.0a1"
+version = "0.12.0a0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
