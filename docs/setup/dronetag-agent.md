@@ -20,7 +20,8 @@ Open the AuterionOS web interface in your browser ([10.41.0.1](http://10.41.0.1/
 In the **Install Software** section, select the `.auterionos` file you downloaded and click **Upload**.
 
 !!! note
-    If AuterionOS is asking for a password, try `starcopter`.
+
+    If AuterionOS is asking for a password, try `starcopter` or `mountain`.
 
 ![Install Software Section](img/auterion-os-install-software.png)
 
