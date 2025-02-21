@@ -12,11 +12,21 @@ the Dronetag Agent has a simple web UI that is accessible from the remote contro
 The web UI address depends on the Skynode's network configuration,
 which in turn depends on the remote controller being used.
 
+!!! note
+
+    As the web UI runs _on_ the HIGHDRA, it is only accessible when the drone is powered on.
+    Therefore, the links below also only work as long as you are reading this document on the Herelink,
+    or a device connected to the drone's WiFi network, respectively.
+
+    If you are reading this document on a different device, you will need to type the address manually :shrug:
+
 ### Herelink
 
 With the Herelink controller, the Dronetag Agent web UI is available at the following address:
 
 [http://192.168.144.20/apps/com.starcopter.dronetag-agent/](http://192.168.144.20/apps/com.starcopter.dronetag-agent/)
+
+A bookmark to this address is also available in the Herelink's Chrome browser.
 
 ### Skynode WiFi
 
@@ -35,7 +45,11 @@ This needs to be done only once, the drone will remember the OPRN once it has be
 
 ![OPRN Successfully Uploaded](img/oprn-success.png)
 
-!!! note "Operator Registration Number"
+!!! note "Important"
+
+    Once uploaded, the drone will retain the OPRN, until it is [manually reset](#resetting-the-oprn).
+
+!!! info "Operator Registration Number"
 
     The Operator Registration Number (OPRN) is a unique identifier for the operator.
     It consists of a three-charactor country code, followed by 13 _public_ alphanumeric characters
