@@ -82,9 +82,3 @@ async def delete_oprn(request: Request):
     context = {"request": request, "message": "OPRN successfully reset."}
     # TODO(sponsfreixes/jinja2-fragments#39): refactor context
     return templates.TemplateResponse("index.html", context, block_name="oprn_form")
-
-
-@app.get("/api/status")
-def dummy_api():
-    """Hotfix for #13"""
-    return {"status": "ok"}

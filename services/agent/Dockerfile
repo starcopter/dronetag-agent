@@ -26,6 +26,7 @@ WORKDIR /app
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 ENV DRONETAG_AGENT_CONFIG_FILE="/data/config.json"
+ENV UVICORN_NO_ACCESS_LOG=1
 ENV MAVLINK_ENDPOINT_IP="172.17.0.1" MAVLINK_ENDPOINT_PORT=5790
 
 # Launch FastAPI application
