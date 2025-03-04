@@ -1,6 +1,6 @@
 [project]
 name = "dronetag-agent"
-version = "0.12.0"
+version = "0.12.1"
 description = "MAVLink relay to couple a Dronetag DRI module with Skynode."
 authors = [
     { name = "Lasse Fröhner", email = "lasse@starcopter.com" }
