@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Added a dummy `/api/status` endpoint, which always returns a successful response. #17, fixes #13
+
 ## [0.12.0] - 2025-02-20
 
 ### Added
