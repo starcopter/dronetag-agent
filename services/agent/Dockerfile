@@ -26,8 +26,8 @@ WORKDIR /app
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 ENV DRONETAG_AGENT_CONFIG_FILE="/data/config.json"
-ENV UVICORN_NO_ACCESS_LOG=1
+ENV UVICORN_HOST="0.0.0.0" UVICORN_PORT="8000" UVICORN_ROOT_PATH="/apps/com.starcopter.dronetag-agent"
 ENV MAVLINK_ENDPOINT_IP="172.17.0.1" MAVLINK_ENDPOINT_PORT=5790
 
-# Launch FastAPI application
-CMD ["fastapi", "run", "main.py", "--root-path", "/apps/com.starcopter.dronetag-agent"]
+# Launch FastAPI application via Uvicorn
+CMD ["uvicorn", "--no-access-log", "main:app"]

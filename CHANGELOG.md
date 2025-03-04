@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+### Changed
 
-- Removed `/api/status` endpoint, and disabled the Uvicorn Access Log via environment variables.
+- Removed dummy `/api/status` endpoint, and disabled Uvicorn Access Log. Related to #13
 
 ## [0.12.1] - 2025-03-04
 

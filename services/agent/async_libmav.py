@@ -23,6 +23,8 @@ class AsyncLibmavConnection:
             message_set = libmav.MessageSet(str(DEFAULT_MESSAGE_SET_LOCATION))
 
         self.message_set = message_set
+        self.system_id = system_id
+        self.component_id = component_id
         identifier = libmav.Identifier(system_id, component_id)
         if heartbeat is not None:
             self._runtime = libmav.NetworkRuntime(identifier, message_set, heartbeat, phy)
@@ -44,7 +46,7 @@ class AsyncLibmavConnection:
 
     async def run(self):
         conn = await asyncio.to_thread(self._runtime.await_connection, 10000)
-        logger.info("libmav connected")
+        logger.info(f"🔌 libmav connected ({self.system_id}/{self.component_id})")
 
         callback = functools.partial(self._loop.call_soon_threadsafe, self._rx_queue.put_nowait)
         conn.add_message_callback(callback)

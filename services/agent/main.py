@@ -1,6 +1,6 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
-from logging import getLogger
 from typing import Annotated
 
 from fastapi import FastAPI, Form, Request
@@ -11,7 +11,8 @@ from jinja2_fragments.fastapi import Jinja2Blocks
 from gateway import DronetagGateway
 from settings import Settings
 
-logger = getLogger("uvicorn.error")
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(levelname)-9s %(message)s")
 
 templates = Jinja2Blocks(directory="templates")
 static_files = StaticFiles(directory="static")
@@ -30,6 +31,7 @@ async def lifespan(app: FastAPI):
         gateway_task = None
     else:
         gateway_task = asyncio.create_task(gateway.run())
+        logger.info(f"🚀 Gateway started ({app_settings.uas_id})")
 
     yield
 

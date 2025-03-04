@@ -74,6 +74,7 @@ dependencies = [
     { name = "libmav" },
     { name = "pydantic-settings" },
     { name = "python-multipart" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -88,6 +89,7 @@ requires-dist = [
     { name = "libmav", specifier = "==0.0.6" },
     { name = "pydantic-settings", specifier = ">=2.7.1" },
     { name = "python-multipart", specifier = ">=0.0.19" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0" },
 ]
 
 [package.metadata.requires-dev]
