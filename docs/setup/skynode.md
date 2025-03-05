@@ -59,7 +59,7 @@ Ensure the following parameters are configured correctly:
 With the Skynode still connected to your laptop, open a terminal window and SSH into the Skynode.
 As described [above](#preparation), the IP address depends on the connection method.
 
-The password should be either `auterion` (default), or `catfish silk latitude`.
+The password should be either `auterion` (default), or `catfish`.
 
 ```shell
 $ ssh root@10.41.0.1
@@ -101,7 +101,7 @@ If the password is still `auterion`, please change it, as that is [publicly docu
 
 !!! note
 
-    Use the password `catfish silk latitude` for now.
+    Use the password `catfish` for now.
     Yes, I know that's not very secure.
 
 ```shell
