@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.3] - 2025-07-29
+
 ## [0.12.2] - 2025-03-04
 
 ### Changed
@@ -71,7 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configuration management via web interface
 - Documentation for installation and usage
 
-[unreleased]: https://github.com/starcopter/dronetag-agent/compare/v0.12.2...HEAD
+[unreleased]: https://github.com/starcopter/dronetag-agent/compare/v0.12.3...HEAD
+[0.12.3]: https://github.com/starcopter/dronetag-agent/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/starcopter/dronetag-agent/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/starcopter/dronetag-agent/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/starcopter/dronetag-agent/compare/v0.11.0...v0.12.0
