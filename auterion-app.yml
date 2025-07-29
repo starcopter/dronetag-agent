@@ -2,7 +2,7 @@ auterion-api-version: 2
 auterion-app-base: v2
 
 app-name: dronetag-agent
-app-version: 0.12.2
+app-version: 0.12.3
 app-author: com.starcopter
 target-platform:
   - skynode

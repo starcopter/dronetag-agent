@@ -33,3 +33,5 @@ for project in . services/agent; do
     # git-add pyproject.toml and uv.lock if --git-add is set
     $git_add && git add "$project/pyproject.toml" "$project/uv.lock"
 done
+
+exit 0
