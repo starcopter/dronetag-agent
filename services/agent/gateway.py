@@ -24,7 +24,7 @@ class DronetagGateway:
                 "autopilot": self.message_set.enum("MAV_AUTOPILOT_INVALID"),
                 "base_mode": 0,
                 "custom_mode": 0,
-                "system_status": self.message_set.enum("MAV_STATE_UNINIT"),
+                "system_status": self.message_set.enum("MAV_STATE_ACTIVE"),
             }
         )
         dri_heartbeat = self.message_set.create("HEARTBEAT").set_from_dict(
@@ -33,7 +33,7 @@ class DronetagGateway:
                 "autopilot": self.message_set.enum("MAV_AUTOPILOT_INVALID"),
                 "base_mode": 0,
                 "custom_mode": 0,
-                "system_status": self.message_set.enum("MAV_STATE_UNINIT"),
+                "system_status": self.message_set.enum("MAV_STATE_ACTIVE"),
             }
         )
 
