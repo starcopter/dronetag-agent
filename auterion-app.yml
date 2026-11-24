@@ -24,4 +24,4 @@ compose-override:
     agent:
       volumes:
         - /etc/hostname:/etc/skynode_id:ro
-        - /persistent/suite/vehicle_sn:/etc/uas_id:ro
+        - /persistent/suite:/mnt/suite:ro

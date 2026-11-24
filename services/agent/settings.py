@@ -1,15 +1,22 @@
+import logging
 import os
 import re
 from ipaddress import IPv4Address
-from typing import Annotated, Tuple, Type
+from pathlib import Path
+from typing import Annotated, Any, Tuple, Type
 
 from pydantic import AfterValidator
+from pydantic.fields import FieldInfo
 from pydantic_settings import BaseSettings, JsonConfigSettingsSource, PydanticBaseSettingsSource, SettingsConfigDict
 
 from mavlink_messages.enums import CategoryEU, ClassEU, UAType
 from oprn import OPRN
 
+logger = logging.getLogger(__name__)
+
 CONFIG_FILE = os.environ.get("DRONETAG_AGENT_CONFIG_FILE", "config.json")
+DEFAULT_SUITE_DIR = Path("/mnt/suite")
+VEHICLE_SN_FILENAME = "vehicle_sn"
 
 
 def validate_uas_id(uas_id: str) -> str:
@@ -20,6 +27,40 @@ def validate_uas_id(uas_id: str) -> str:
     if len(m.group("serial")) != int(m.group("len"), 16):
         raise ValueError("Invalid UAS ID length")
     return uas_id
+
+
+def suite_dir() -> Path:
+    """Directory bind-mounted from the Skynode's /persistent/suite."""
+    return Path(os.environ.get("DRONETAG_AGENT_SUITE_DIR", DEFAULT_SUITE_DIR))
+
+
+def read_vehicle_sn() -> str | None:
+    """Return the vehicle serial when vehicle_sn is a regular file.
+
+    A missing path is normal before the serial is programmed. A directory at that
+    path is left over from mounting the file itself and must not be treated as a serial.
+    """
+    path = suite_dir() / VEHICLE_SN_FILENAME
+    if not path.exists():
+        return None
+    if not path.is_file():
+        logger.warning("UAS ID path %s is not a regular file, so no serial was loaded", path)
+        return None
+    value = path.read_text().strip()
+    return value or None
+
+
+class VehicleSnSettingsSource(PydanticBaseSettingsSource):
+    """Load uas_id from the Suite directory. Lower priority than env and config.json."""
+
+    def get_field_value(self, field: FieldInfo, field_name: str) -> tuple[Any, str, bool]:
+        return None, "", False
+
+    def __call__(self) -> dict[str, Any]:
+        uas_id = read_vehicle_sn()
+        if uas_id is None:
+            return {}
+        return {"uas_id": uas_id}
 
 
 class Settings(BaseSettings):
@@ -55,7 +96,13 @@ class Settings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
-        return init_settings, env_settings, JsonConfigSettingsSource(settings_cls), file_secret_settings
+        return (
+            init_settings,
+            env_settings,
+            JsonConfigSettingsSource(settings_cls),
+            file_secret_settings,
+            VehicleSnSettingsSource(settings_cls),
+        )
 
     def save(self):
         with open(self.model_config["json_file"], "w") as f:

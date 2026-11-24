@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Read the UAS serial from `/persistent/suite/vehicle_sn` by mounting `/persistent/suite`. A missing serial file is no longer created as a directory.
+
 ## [0.12.3] - 2025-07-29
 
 ## [0.12.2] - 2025-03-04

@@ -51,6 +51,7 @@ The direct remote identification system shall reduce the ability of tampering wi
 
 The serial number is programmed to the HIGHDRA at starcopter during the manucfacturing process.
 It is then stored persistently in onboard eMMC memory, which is part of the onboard mission computer.
+The Dronetag Agent reads that serial from `/persistent/suite/vehicle_sn`.
 This memory is only accessible from _inside_ the mission computer, which requires SSH access to the embedded Linux system.
 
 !!! success
