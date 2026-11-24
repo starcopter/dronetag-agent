@@ -50,6 +50,11 @@ Will always be 2 (Multirotor) for the HIGHDRA.
 UAS serial number in ANSI/CTA-2063-A format, starting with `1715`, starcopter's manufacturer code.
 Configured by starcopter during production, cannot be changed by the user.
 
+The agent reads it from `/persistent/suite/vehicle_sn` on the Skynode.
+`/persistent/suite` is bind-mounted read-only at `/mnt/suite`, so a missing `vehicle_sn` stays missing instead of being created as a directory.
+Until the file exists, the UI shows "Not set" and Basic ID is sent with ID type NONE.
+Restart the app after the file is written; the serial is loaded at startup.
+
 ## Implementation
 
 The Basic ID message is periodically created by the Dronetag Agent and sent to the DRI module.

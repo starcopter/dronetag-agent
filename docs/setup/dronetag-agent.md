@@ -30,6 +30,26 @@ You should see the Dronetag Agent in the list of installed user applications.
 
 ![Installed Dronetag Agent](img/auterion-os-installed-dronetag-agent.png)
 
+## Vehicle serial
+
+The app reads the UAS serial from `/persistent/suite/vehicle_sn` when it starts.
+The UI shows "Not set" until that file exists. Restart the app after the file is written.
+
+Older releases mounted `vehicle_sn` itself. When the file was not on the Skynode yet, Docker created a directory at that path, and the serial file could not replace it.
+Over SSH:
+
+```shell
+ls -ld /persistent/suite/vehicle_sn
+```
+
+Stop the app when that path is a directory. If the directory is empty, remove it, then write the serial file (one line, the ANSI/CTA-2063-A serial) before starting the app again:
+
+```shell
+rmdir /persistent/suite/vehicle_sn
+```
+
+Install the updated app and open the UI. The UAS ID line shows the serial.
+
 ## Verify
 
 Click the blue **Dronetag Agent >** button to open the application user interface.
